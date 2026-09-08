@@ -54,7 +54,7 @@ alumno no acabe con cuatro fórmulas sueltas.
 - **Modo papel** para proyectar o imprimir, con la misma paleta aclarada.
 - **Índice de salas**: abre cualquier sala suelta —sin encargo, con todos sus
   mandos— para explicarla en la pizarra, o salta a un encargo concreto.
-- **Autodiagnóstico**: trece comprobaciones que prueban cada cuenta contra la
+- **Autodiagnóstico**: catorce comprobaciones que prueban cada cuenta contra la
   de al lado —el prisma contra el conteo bloque a bloque, la pirámide contra
   tres vertidos, el tronco contra sus dos extremos, la regla de ⁸⁄₉ contra π—.
   Lo que salga en rojo, está roto.

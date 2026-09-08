@@ -222,6 +222,10 @@ footer{margin-top:26px;font-family:'Space Mono',monospace;font-size:10px;letter-
   text-transform:uppercase;color:var(--tenue);opacity:.75;text-align:center}
 footer a{color:var(--tenue)}
 
+/* lo recién puesto entra con un fundido corto; quien pida menos movimiento
+   no lo tiene, por la regla de abajo */
+@keyframes aparece{from{opacity:0}to{opacity:1}}
+.nueva{animation:aparece .28s ease-out}
 @media (prefers-reduced-motion: reduce){
   *{animation-duration:.001ms !important;transition-duration:.001ms !important}
 }
@@ -330,6 +334,10 @@ footer a{color:var(--tenue)}
     <button class="b" id="cajaVierte">Poner la siguiente pieza</button>
     <button class="b" id="cajaCero">Vaciar la caja</button>
   </div>
+  <div class="fila">
+    <span class="etq">verlas</span>
+    <button class="b" id="cajaSeparar" aria-pressed="false">Separar las piezas</button>
+  </div>
   <div class="escena"><svg class="caja" id="svgCaja" viewBox="0 0 520 300" role="img"
     aria-label="Un prisma partido en tres pirámides que salen de la misma esquina"></svg></div>
   <p class="lectura" id="lecCaja"></p>
@@ -402,6 +410,19 @@ const vTronco   = (a, b, h) => h / 3 * (a*a + a*b + b*b);
    novenos del diámetro. Al lado, la de verdad, para poder restarlas. */
 const areaEgipcia = d => (8/9 * d) ** 2;
 const areaCirculo = d => Math.PI * (d/2) ** 2;
+/* Lo que la regla deja fuera y lo que mete de más. El cuadrado de 8/9 tiene
+   el lado dentro del círculo (4/9 < 1/2) y las esquinas fuera (4√2/9 > 1/2),
+   así que lo que FALTA son cuatro segmentos circulares, uno por lado, y lo
+   que SOBRA son las cuatro esquinas. Se calculan de verdad, para poder
+   escribirlos al lado del dibujo. */
+function sobraYFalta(d){
+  const r = d / 2, k = 4/9 * d;                       // radio, y media diagonal del cuadrado
+  const seg = r*r * Math.acos(k / r) - k * Math.sqrt(r*r - k*k);   // un segmento circular
+  const falta = 4 * seg;
+  const dentro = areaCirculo(d) - falta;              // el trozo de círculo que el cuadrado sí cubre
+  const sobra = areaEgipcia(d) - dentro;
+  return {sobra, falta};
+}
 
 /* ── LAS CARAS. Clonadas de la línea del tiempo, sin redibujar: el mismo
    Jefeops y el mismo Listahmes que están en su parada. ── */
@@ -549,18 +570,32 @@ function pintaPatio(){
   /* Los bloques puestos van en piedra maciza y los que faltan por levantar,
      en línea de puntos: se ve de un golpe cuánto lleva la obra y cuánto le
      queda, sin tener que fiarse del color. */
-  const bloque = (x, y, z, viva) => {
-    const A = P(x, y, z+1), B = P(x+1, y, z+1), C = P(x+1, y+1, z+1), D = P(x, y+1, z+1);
-    cara([A, B, C, D], 'var(--arena)', viva);
-    cara([D, C, P(x+1, y+1, z), P(x, y+1, z)], 'var(--arenaO)', viva);
-    cara([B, C, P(x+1, y+1, z), P(x+1, y, z)], 'var(--granito)', viva);
+  /* Un bloque puede ser un TROZO de bloque: con un lado de dos codos y
+     medio, la última columna mide medio codo. El trozo va en un tono más
+     claro para que se vea que es medio bloque, no uno entero (Wu: el paso
+     de enteros a fracciones se hace, no se da por hecho). */
+  const bloque = (x, y, z, viva, wx = 1, wy = 1) => {
+    const trozo = wx < 1 || wy < 1;
+    const A = P(x, y, z+1), B = P(x+wx, y, z+1), C = P(x+wx, y+wy, z+1), D = P(x, y+wy, z+1);
+    cara([A, B, C, D], trozo ? 'var(--oro)' : 'var(--arena)', viva);
+    cara([D, C, P(x+wx, y+wy, z), P(x, y+wy, z)], trozo ? 'var(--arenaO)' : 'var(--arenaO)', viva);
+    cara([B, C, P(x+wx, y+wy, z), P(x+wx, y, z)], trozo ? 'var(--granitoO)' : 'var(--granito)', viva);
   };
   /* De lejos a cerca: lo que está más abajo-derecha en pantalla tapa a lo
-     de detrás, así que se pinta al final. */
+     de detrás, así que se pinta al final. Las columnas van de una en una y,
+     si el lado no es entero, la última es un trozo. */
+  const cols = n => { const c = []; for(let k = 0; k < Math.ceil(n); k++) c.push([k, Math.min(1, n - k)]); return c; };
   const orden = [];
-  for(let x = 0; x < l; x++) for(let y = 0; y < a; y++) for(let z = 0; z < h; z++) orden.push([x, y, z]);
+  cols(l).forEach(([x, wx]) => cols(a).forEach(([y, wy]) => {
+    for(let z = 0; z < h; z++) orden.push([x, y, z, wx, wy]);
+  }));
   orden.sort((p, q) => (p[0]+p[1]) - (q[0]+q[1]) || p[2] - q[2]);
-  orden.forEach(([x, y, z]) => bloque(x, y, z, z < patio.puestas));
+  orden.forEach(([x, y, z, wx, wy]) => bloque(x, y, z, z < patio.puestas, wx, wy));
+  /* la capa recién puesta entra con un fundido corto: así el ojo sabe qué
+     ha cambiado sin tener que buscarlo */
+  Array.from(g.querySelectorAll('polygon')).slice(-3 * Math.ceil(l) * Math.ceil(a)).forEach(p => {
+    if(patio.puestas > 0) p.classList.add('nueva');
+  });
 
   /* EL CUBO UNIDAD, aparte, abajo a la izquierda: lo que se está contando.
      A escala fija, no a la del montón, para que siempre se vea igual. */
@@ -574,7 +609,7 @@ function pintaPatio(){
     t.setAttribute('x', ox + 26); t.setAttribute('y', oy + 2);
     t.setAttribute('fill', 'var(--tenue)');
     t.setAttribute('font-family', "'Space Mono',monospace");
-    t.setAttribute('font-size', '10.5');
+    t.setAttribute('font-size', '13');
     t.textContent = '1 × 1 × 1 · un codo cúbico';
     g.appendChild(t);
   }
@@ -583,7 +618,7 @@ function pintaPatio(){
   t.setAttribute('x', 12); t.setAttribute('y', 20);
   t.setAttribute('fill', 'var(--oro)');
   t.setAttribute('font-family', "'Space Mono',monospace");
-  t.setAttribute('font-size', '13');
+  t.setAttribute('font-size', '16');
   const n = Math.min(patio.puestas, h);
   t.textContent = n === h ? 'levantado entero · ' + h + (h === 1 ? ' capa' : ' capas')
                           : n + ' de ' + h + ' capas';
@@ -598,20 +633,25 @@ function leePatio(){
   $('lecPatio').innerHTML =
     'El <b>volumen</b> de un cuerpo es cuántos cubos de un codo de lado caben dentro. '
     + 'Cada bloque es uno de esos cubos: <b>un codo cúbico</b>. '
-    + 'La capa de abajo lleva <b>' + patio.l + ' × ' + patio.a + ' = ' + capa + '</b> bloques. '
+    + 'La capa de abajo lleva <b>' + cifra(patio.l, 1) + ' × ' + cifra(patio.a, 1) + ' = ' + cifra(capa, 2) + '</b> bloques. '
+    + (patio.l % 1 || patio.a % 1
+       ? 'Los de <b>medio codo</b> son medios bloques: dos hacen uno, así que cada uno es medio '
+         + 'codo cúbico y cuenta la mitad. Por eso la cuenta sigue valiendo con medios, y no porque '
+         + 'lo diga la fórmula. '
+       : '')
     + (puestas < patio.h
        ? 'Van <b>' + puestas + '</b> de las ' + patio.h + ' capas: ' + capa + ' × ' + puestas
          + ' = <b>' + cifra(v, 0) + '</b> bloques puestos.'
        : 'Y caben <b>' + patio.h + '</b> capas, así que el bloque entero son <b>'
-         + cifra(total, 0) + '</b> codos cúbicos.')
-    + '<span class="cuenta">' + patio.l + ' × ' + patio.a + ' × ' + patio.h + ' = ' + cifra(total, 0)
+         + cifra(total, 2) + '</b> codos cúbicos.')
+    + '<span class="cuenta">' + cifra(patio.l, 1) + ' × ' + cifra(patio.a, 1) + ' × ' + patio.h + ' = ' + cifra(total, 2)
     + '   ·   (lo de la capa) × (las capas que quepan)</span>';
 }
 function mandosPatio(){
-  const r = [1,2,3,4,5,6];
+  const r = [1,2,2.5,3,3.5,4,5,6];
   tira('mLargo', r, () => patio.l, v => { patio.l = v; patio.puestas = Math.min(patio.puestas, patio.h); pintaPatio2(); });
   tira('mAncho', r, () => patio.a, v => { patio.a = v; pintaPatio2(); });
-  tira('mAlto',  r, () => patio.h, v => { patio.h = v; patio.puestas = Math.min(patio.puestas, v); pintaPatio2(); });
+  tira('mAlto',  [1,2,3,4,5,6], () => patio.h, v => { patio.h = v; patio.puestas = Math.min(patio.puestas, v); pintaPatio2(); });
 }
 function pintaPatio2(){ mandosPatio(); pintaPatio(); leePatio(); revisa(); }
 $('patioCapa').addEventListener('click', () => {
@@ -631,7 +671,7 @@ function pintaGranero(){
   const NS = 'http://www.w3.org/2000/svg';
   const el = (t, at) => { const e = document.createElementNS(NS, t);
     for(const k in at) e.setAttribute(k, at[k]); g.appendChild(e); return e; };
-  const cx = 148, cy = 158, esc = 110 / 9;      // 9 codos de diámetro llenan el marco
+  const cx = 148, cy = 140, esc = 110 / 9;      // 9 codos de diámetro llenan el marco
   const r = granero.d / 2 * esc;
   /* la cuadrícula de codos, que es lo que hace contable el dibujo */
   /* la cuadrícula, del tamaño justo de lo que hay que medir: antes se
@@ -649,14 +689,23 @@ function pintaGranero(){
   if(granero.regla){
     const lado = 8/9 * granero.d * esc;
     el('rect', {x:cx - lado/2, y:cy - lado/2, width:lado, height:lado,
-                fill:'none', stroke:'var(--lapis)', 'stroke-width':2.4,
+                fill:'var(--lapis)', 'fill-opacity':.32, stroke:'var(--lapis)', 'stroke-width':2.4,
                 'stroke-dasharray':'7 4'});
+    /* lo que sobra (esquinas, solo azul) y lo que falta (lunas, solo arena),
+       con sus áreas escritas al pie de la planta */
+    const sf = sobraYFalta(granero.d);
+    el('text', {x:cx, y:cy + lado/2 + 34, fill:'var(--lapis)', 'text-anchor':'middle',
+                'font-family':"'Space Mono',monospace", 'font-size':13})
+      .textContent = 'sobra por las esquinas: ' + cifra(sf.sobra, 1);
+    el('text', {x:cx, y:cy + lado/2 + 51, fill:'var(--arena)', 'text-anchor':'middle',
+                'font-family':"'Space Mono',monospace", 'font-size':13})
+      .textContent = 'falta por los lados: ' + cifra(sf.falta, 1);
     const rot = 'lado = 8/9 · ' + granero.d + ' = ' + cifra(8/9*granero.d, 2);
     /* anclada al cuadrado pero sujeta al marco: con diámetros pequeños el
        texto es más ancho que el cuadrado y se salía por la izquierda */
     const ancho = rot.length * 7.2, tx = Math.max(8 + ancho/2, cx);
     el('text', {x:tx, y:cy - lado/2 - 8, fill:'var(--lapis)', 'text-anchor':'middle',
-                'font-family':"'Space Mono',monospace", 'font-size':12}).textContent = rot;
+                'font-family':"'Space Mono',monospace", 'font-size':15}).textContent = rot;
   }
   /* el alzado del granero, al lado: la misma base, levantada */
   const bx = 330, bw = r * 2, bh = granero.h * esc * .8;
@@ -674,11 +723,11 @@ function pintaGranero(){
   }
   el('ellipse', {cx:bx + bw/2, cy:by, rx:bw/2, ry:bw/6, fill:'var(--arena)',
                  stroke:'var(--junta)', 'stroke-width':1.2});
-  el('line', {x1:bx + bw + 16, y1:by, x2:bx + bw + 16, y2:by + bh,
+  el('line', {x1:bx + bw + 14, y1:by, x2:bx + bw + 14, y2:by + bh,
               stroke:'var(--oro)', 'stroke-width':1.6});
-  el('text', {x:bx + bw + 22, y:by + bh/2, fill:'var(--oro)',
-              'font-family':"'Space Mono',monospace", 'font-size':12})
-    .textContent = granero.h + ' codos';
+  el('text', {x:bx + bw/2, y:by + bh + bw/6 + 18, fill:'var(--oro)', 'text-anchor':'middle',
+              'font-family':"'Space Mono',monospace", 'font-size':13})
+    .textContent = 'alto ' + granero.h + ' codos';
 }
 function leeGranero(){
   const ae = areaEgipcia(granero.d), ac = areaCirculo(granero.d);
@@ -695,7 +744,10 @@ function leeGranero(){
       ? 'El escriba no tiene π: <b>aproxima</b> el círculo con un cuadrado de lado <b>ocho novenos del '
         + 'diámetro</b> y multiplica ese lado por sí mismo. Le sale <b>' + cifra(ae, 1)
         + '</b> codos cuadrados. La cuenta exacta, con π, da ' + cifra(ac, 1) + ': la regla se '
-        + 'queda a <b>' + cifra(err, 1) + ' %</b>. Con una cuerda y un papiro, no está nada mal.'
+        + 'queda a <b>' + cifra(err, 1) + ' %</b>. Y se ve por qué: sobra por las cuatro esquinas '
+        + 'casi lo mismo que falta por los cuatro lados —' + cifra(sobraYFalta(granero.d).sobra, 1)
+        + ' contra ' + cifra(sobraYFalta(granero.d).falta, 1) + '— y lo uno compensa lo otro. '
+        + 'Con una cuerda y un papiro, no está nada mal.'
       : 'Pon el cuadrado de ocho novenos encima y mira qué le sobra por las esquinas y qué le falta por los lados.')
     + '<span class="cuenta">' + cifra(ae, 1) + ' × ' + granero.h + ' = '
     + cifra(ae * granero.h, 1) + ' codos cúbicos   ·   (el área de la capa) × (las capas)</span>';
@@ -722,12 +774,54 @@ $('gRegla').addEventListener('click', () => {
    de la primera pieza queda sobre una esquina, no sobre el centro, y que
    eso no cambie el volumen es asunto del gabinete de Cavalieri, río abajo.
    Aquí se dice; allí se demuestra.                                        */
-const caja = {l:4, h:4, dentro:0};
+const caja = {l:4, h:4, dentro:0, separadas:false};
 const PIEZAS = [
   {col:'var(--arena)', nombre:'suelo',         base:'suelo'},
   {col:'var(--lapis)', nombre:'pared derecha', base:'derecha'},
   {col:'var(--verde)', nombre:'pared del fondo', base:'fondo'}
 ];
+
+/* LAS PIEZAS SEPARADAS. Cada pirámide sacada de la caja y apoyada en su
+   base, en fila: la del suelo con base lado × lado y alto la altura, y las
+   dos de las paredes con base lado × alto y la punta a un lado de distancia.
+   Con la caja cúbica las tres salen idénticas, y eso es lo que había que
+   ver en vez de creerse. Las tres van en caballera, con la punta encima de
+   la esquina delantera izquierda de su base, como estaban en la caja. */
+function pintaCajaSeparada(g, el, pts){
+  const {l, h} = caja;
+  const n = Math.min(caja.dentro, 3);
+  /* las tres bases: (ancho, fondo, alto de la punta) en codos */
+  const formas = [[l, l, h], [l, h, l], [h, l, l]];
+  const maxAncho = Math.max(l, h) + Math.max(l, h) * .55 * .7, maxAlto = Math.max(l, h);
+  const esc = Math.min(24, 150 / maxAncho, 135 / maxAlto);
+  formas.forEach((fm, i) => {
+    const pz = PIEZAS[i], puesta = i < n;
+    const [an, fo, al] = fm;
+    const w = an * esc, prof = fo * esc * .55, H = al * esc;
+    const dx = prof * .7, dy = -prof * .5;
+    const cx = 92 + i * 170, base = 212;
+    const x0 = cx - (w + dx) / 2, y0 = base;
+    const F0 = [x0, y0], F1 = [x0 + w, y0], B1 = [F1[0] + dx, F1[1] + dy], B0 = [F0[0] + dx, F0[1] + dy];
+    const A = [x0, y0 - H];             // la punta, sobre la esquina delantera izquierda
+    const col = puesta ? pz.col : 'var(--linea)';
+    el('polygon', {points:pts([F0, F1, B1, B0]), fill:col, 'fill-opacity':puesta ? .45 : .08,
+                   stroke:col, 'stroke-width':1.5, 'stroke-linejoin':'round'});
+    [[F0, F1], [F1, B1], [B1, B0], [B0, F0]].forEach(([p, q]) =>
+      el('polygon', {points:pts([A, p, q]), fill:col, 'fill-opacity':puesta ? .22 : .04,
+                     stroke:col, 'stroke-width':1.2, 'stroke-linejoin':'round'}));
+    el('text', {x:cx, y:base + 22, fill:puesta ? 'var(--tinta)' : 'var(--tenue)', 'text-anchor':'middle',
+                'font-family':"'Space Mono',monospace", 'font-size':12.5},
+       (i + 1) + '.ª · ' + pz.nombre);
+    el('text', {x:cx, y:base + 38, fill:'var(--tenue)', 'text-anchor':'middle',
+                'font-family':"'Space Mono',monospace", 'font-size':11.5},
+       'base ' + an + ' × ' + fo + ' · alto ' + al);
+    if(!puesta) el('text', {x:cx, y:base - H/2, fill:'var(--tenue)', 'text-anchor':'middle',
+                  'font-family':"'Space Mono',monospace", 'font-size':13}, 'aún en la caja');
+  });
+  el('text', {x:12, y:20, fill:'var(--oro)', 'font-family':"'Space Mono',monospace", 'font-size':16},
+     l === h ? 'las tres, apoyadas en su base: son la misma'
+             : 'las tres, apoyadas en su base');
+}
 
 function pintaCaja(){
   const g = $('svgCaja'); g.innerHTML = '';
@@ -736,6 +830,7 @@ function pintaCaja(){
     for(const k in at) e.setAttribute(k, at[k]);
     if(txt !== undefined) e.textContent = txt; g.appendChild(e); return e; };
   const pts = q => q.map(p => p[0].toFixed(1) + ',' + p[1].toFixed(1)).join(' ');
+  if(caja.separadas){ pintaCajaSeparada(g, el, pts); return; }
   /* perspectiva caballera: el frente de cara y el fondo corrido en diagonal */
   const esc = Math.min(30, 150 / Math.max(caja.l, caja.h));
   const w = caja.l * esc, H = caja.h * esc, prof = w * .55;
@@ -759,13 +854,16 @@ function pintaCaja(){
 
   /* las piezas puestas: cada pirámide, con su base y sus cuatro caras en su
      color, translúcidas para que se vea que ocupan sitio y no se tapan */
-  PIEZAS.slice(0, Math.min(caja.dentro, 3)).forEach(pz => {
-    const Q = BASES[pz.base];
-    el('polygon', {points:pts(Q), fill:pz.col, 'fill-opacity':.42,
+  PIEZAS.slice(0, Math.min(caja.dentro, 3)).forEach((pz, i) => {
+    const Q = BASES[pz.base], ultima = i === Math.min(caja.dentro, 3) - 1;
+    const b = el('polygon', {points:pts(Q), fill:pz.col, 'fill-opacity':.42,
                    stroke:pz.col, 'stroke-width':1.6, 'stroke-linejoin':'round'});
-    for(let i = 0; i < 4; i++)
-      el('polygon', {points:pts([A, Q[i], Q[(i+1) % 4]]), fill:pz.col, 'fill-opacity':.22,
+    if(ultima) b.classList.add('nueva');
+    for(let k = 0; k < 4; k++){
+      const c = el('polygon', {points:pts([A, Q[k], Q[(k+1) % 4]]), fill:pz.col, 'fill-opacity':.22,
                      stroke:pz.col, 'stroke-width':1.2, 'stroke-linejoin':'round'});
+      if(ultima) c.classList.add('nueva');     // la pieza recién puesta entra con fundido
+    }
   });
 
   /* la caja, encima, en oro: es el marco de todo */
@@ -777,19 +875,19 @@ function pintaCaja(){
   /* la esquina común, señalada */
   el('circle', {cx:A[0], cy:A[1], r:4.5, fill:'var(--oro)', stroke:'var(--noche)', 'stroke-width':1.5});
   el('text', {x:A[0] - 8, y:A[1] - 9, fill:'var(--oro)', 'text-anchor':'end',
-              'font-family':"'Space Mono',monospace", 'font-size':11}, 'la esquina');
+              'font-family':"'Space Mono',monospace", 'font-size':13.5}, 'la esquina');
   /* las cotas */
   el('text', {x:(F0[0] + F1[0]) / 2, y:y0 + 17, fill:'var(--tenue)', 'text-anchor':'middle',
-              'font-family':"'Space Mono',monospace", 'font-size':11}, 'lado ' + caja.l);
+              'font-family':"'Space Mono',monospace", 'font-size':13.5}, 'lado ' + caja.l);
   el('text', {x:F1[0] + dx + 8, y:(F1[1] + F2[1]) / 2 + dy, fill:'var(--tenue)',
-              'font-family':"'Space Mono',monospace", 'font-size':11}, 'alto ' + caja.h);
+              'font-family':"'Space Mono',monospace", 'font-size':13.5}, 'alto ' + caja.h);
   /* la leyenda de las piezas, en el pie del marco */
   PIEZAS.forEach((pz, i) => {
     const puesta = i < caja.dentro, x = 16 + i * 170, y = 284;
     el('rect', {x, y:y - 10, width:11, height:11, rx:2, fill:pz.col,
                 'fill-opacity':puesta ? .8 : .15, stroke:pz.col, 'stroke-width':1});
     el('text', {x:x + 17, y, fill:puesta ? 'var(--tinta)' : 'var(--tenue)',
-                'font-family':"'Space Mono',monospace", 'font-size':10.5},
+                'font-family':"'Space Mono',monospace", 'font-size':13},
        (i + 1) + '.ª · ' + pz.nombre);
   });
 }
@@ -818,7 +916,16 @@ function leeCaja(){
           + (h > l ? 'hacia arriba' : 'hacia los lados') + ': al estirar, las tres piezas se '
           + 'estiran igual y siguen valiendo lo mismo. Sigue siendo un tercio.')
   ][n];
-  $('lecCaja').innerHTML = texto
+  const separadas = caja.separadas && n > 0
+    ? (cubo
+      ? ' Y sacadas de la caja y apoyadas en su base, las tres son <b>idénticas</b>: base ' + l
+        + ' × ' + l + ' y punta a ' + l + ' de alto. No hay que creérselo.'
+      : ' Sacadas y apoyadas en su base, las dos de las paredes son <b>iguales entre sí</b> —base '
+        + l + ' × ' + h + ', punta a ' + l + '— y la del suelo tiene otra forma: base ' + l + ' × ' + l
+        + ', punta a ' + h + '. Valen lo mismo porque la caja es el cubo estirado; con la caja '
+        + 'cúbica las tres salen idénticas.')
+    : '';
+  $('lecCaja').innerHTML = texto + separadas
     + '<span class="cuenta">' + l + ' × ' + l + ' × ' + h + ' ÷ 3 = '
     + cifra(vpi, 2) + ' codos cúbicos   ·   (la caja) ÷ 3</span>';
 }
@@ -826,12 +933,20 @@ function mandosCaja(){
   tira('mLadoC', [2,3,4,5,6], () => caja.l, v => { caja.l = v; pintaCaja2(); });
   tira('mAltC',  [2,3,4,5,6], () => caja.h, v => { caja.h = v; pintaCaja2(); });
 }
-function pintaCaja2(){ mandosCaja(); pintaCaja(); leeCaja(); $('cajaVierte').disabled = caja.dentro >= 3; revisa(); }
+function pintaCaja2(){
+  mandosCaja();
+  $('cajaSeparar').setAttribute('aria-pressed', String(caja.separadas));
+  $('cajaSeparar').textContent = caja.separadas ? 'Volver a meterlas' : 'Separar las piezas';
+  pintaCaja(); leeCaja(); $('cajaVierte').disabled = caja.dentro >= 3; revisa();
+}
 $('cajaVierte').addEventListener('click', () => {
   caja.dentro = caja.dentro >= 3 ? 3 : caja.dentro + 1; pintaCaja2();
   $('cajaVierte').disabled = caja.dentro >= 3;
 });
 $('cajaCero').addEventListener('click', () => { caja.dentro = 0; pintaCaja2(); $('cajaVierte').disabled = false; });
+$('cajaSeparar').addEventListener('click', () => {
+  caja.separadas = !caja.separadas; pintaCaja2();
+});
 
 /* ═══ SALA 4 · EL TRONCO ══════════════════════════════════════════════
    El problema 14 del papiro de Moscú, que es el volumen más antiguo que se
@@ -863,12 +978,12 @@ function pintaTronco(){
                    fill:'var(--tenue)', 'fill-opacity':.13,
                    stroke:'var(--tenue)', 'stroke-width':1.3, 'stroke-dasharray':'6 4'});
     el('text', {x:X(0), y:Y(total) - 20, fill:'var(--tenue)', 'text-anchor':'middle',
-                'font-family':"'Space Mono',monospace", 'font-size':11},
+                'font-family':"'Space Mono',monospace", 'font-size':13.5},
        'la punta que falta');
     /* y cuánto vale: así «la entera menos la punta» se lee en la escena */
     const falta = vPiramide(a, total) - vTronco(a, b, h);
     el('text', {x:X(0), y:Y(total) - 7, fill:'var(--tenue)', 'text-anchor':'middle',
-                'font-family':"'Space Mono',monospace", 'font-size':11},
+                'font-family':"'Space Mono',monospace", 'font-size':13.5},
        cifra(falta, 2) + ' codos cúbicos');
   }
   /* el tronco, que es lo que hay levantado */
@@ -885,14 +1000,14 @@ function pintaTronco(){
   const cota = (x1, y1, x2, y2, txt, col) => {
     el('line', {x1, y1, x2, y2, stroke:col, 'stroke-width':1.4});
     el('text', {x:(x1+x2)/2, y:(y1+y2)/2 - 6, fill:col, 'text-anchor':'middle',
-                'font-family':"'Space Mono',monospace", 'font-size':11.5}, txt);
+                'font-family':"'Space Mono',monospace", 'font-size':14}, txt);
   };
   cota(X(-a), sueloY + 16, X(a), sueloY + 16, 'base ' + a, 'var(--oro)');
   cota(X(-b), Y(h) - 14, X(b), Y(h) - 14, 'cima ' + b, 'var(--lapis)');
   el('line', {x1:X(a) + 26, y1:Y(0), x2:X(a) + 26, y2:Y(h),
               stroke:'var(--verde)', 'stroke-width':1.4});
   el('text', {x:X(a) + 32, y:(Y(0) + Y(h))/2, fill:'var(--verde)',
-              'font-family':"'Space Mono',monospace", 'font-size':11.5}, 'alto ' + h);
+              'font-family':"'Space Mono',monospace", 'font-size':14}, 'alto ' + h);
 }
 function leeTronco(){
   const {a, b, h} = tronco;
@@ -954,17 +1069,27 @@ function pintaSeked(){
   const sueloY = 258;
 
   /* ── EL PERFIL, a la izquierda. Sale a la escala que quepa. ── */
-  const esc = Math.min(168 / seked.h, 118 / Math.max(retro, 1));
+  const esc = Math.min(168 / seked.h, 118 / Math.max(retro, 5.5 / PALMOS * seked.h, 1));
   const cx = 148;
   const X = u => cx + u * esc, Y = v => sueloY - v * esc;
   el('line', {x1:18, y1:sueloY, x2:280, y2:sueloY, stroke:'var(--junta)', 'stroke-width':1.4});
+  /* la gran pirámide, en fantasma y a la misma altura, para tener con qué
+     comparar: «más tumbada que Keops» o «más de pie» */
+  if(Math.abs(seked.s - 5.5) > 1e-9){
+    const rk = 5.5 / PALMOS * seked.h;
+    el('polygon', {points:`${X(-rk)},${Y(0)} ${X(rk)},${Y(0)} ${X(0)},${Y(seked.h)}`,
+                   fill:'none', stroke:'var(--tenue)', 'stroke-width':1.2, 'stroke-dasharray':'5 4',
+                   'stroke-opacity':.7});
+    el('text', {x:20, y:sueloY + 34, fill:'var(--tenue)',
+                'font-family':"'Space Mono',monospace", 'font-size':12}, 'a puntos: Keops · 5,5');
+  }
   el('polygon', {points:`${X(-retro)},${Y(0)} ${X(retro)},${Y(0)} ${X(0)},${Y(seked.h)}`,
                  fill:'var(--arena)', 'fill-opacity':.88,
                  stroke:'var(--arenaO)', 'stroke-width':2, 'stroke-linejoin':'round'});
   el('line', {x1:X(0), y1:Y(0), x2:X(0), y2:Y(seked.h),
               stroke:'var(--verde)', 'stroke-width':1.2, 'stroke-dasharray':'5 4'});
   el('text', {x:X(0), y:sueloY + 18, fill:'var(--verde)', 'text-anchor':'middle',
-              'font-family':"'Space Mono',monospace", 'font-size':11.5},
+              'font-family':"'Space Mono',monospace", 'font-size':14},
      'alto ' + seked.h + ' codos');
   /* el trozo de cara del que se saca el triángulo, señalado sobre el perfil */
   const marca = Math.min(1, seked.h);
@@ -974,14 +1099,14 @@ function pintaSeked(){
   /* la lupa: una línea fina del trocito azul de la cara al triángulo
      grande, para que se vea que son la misma cosa a dos tamaños */
   const lupaDe = [X(retro - seked.s/PALMOS*marca), Y(marca)];
-  el('line', {x1:lupaDe[0], y1:lupaDe[1], x2:446 - seked.s * (150/PALMOS), y2:sueloY - 6 - 150,
+  el('line', {x1:lupaDe[0], y1:lupaDe[1], x2:438 - seked.s * (150/PALMOS), y2:sueloY - 6 - 150,
               stroke:'var(--lapis)', 'stroke-width':1, 'stroke-dasharray':'3 4', 'stroke-opacity':.7});
   /* ── EL TRIÁNGULO DEL SEKED, a la derecha y en grande. Es el gesto de la
      sala y antes salía de trece píxeles: un codo de subida partido en sus
      SIETE palmos, y el retranqueo contado sobre esos mismos palmos. Así se
      ve que el seked no es un número raro, es cuántos palmos de los siete
      se mete la cara. ── */
-  const bx = 446, by = sueloY - 6, codo = 150, palmo = codo / PALMOS;
+  const bx = 438, by = sueloY - 6, codo = 150, palmo = codo / PALMOS;
   const A = [bx, by], B = [bx, by - codo], C = [bx - seked.s * palmo, by - codo];
   el('line', {x1:286, y1:by + 4, x2:474, y2:by + 4, stroke:'var(--linea)', 'stroke-width':1});
   el('polygon', {points:`${A[0]},${A[1]} ${B[0]},${B[1]} ${C[0]},${C[1]}`,
@@ -993,10 +1118,10 @@ function pintaSeked(){
     el('line', {x1:bx, y1:y, x2:bx + (k % PALMOS === 0 ? 12 : 7), y2:y,
                 stroke:'var(--tenue)', 'stroke-width':k % PALMOS === 0 ? 1.6 : 1});
   }
-  el('text', {x:bx + 16, y:by - codo/2 + 4, fill:'var(--tenue)',
-              'font-family':"'Space Mono',monospace", 'font-size':11}, '1 codo');
-  el('text', {x:bx + 16, y:by - codo/2 + 18, fill:'var(--tenue)',
-              'font-family':"'Space Mono',monospace", 'font-size':10}, '= 7 palmos');
+  el('text', {x:bx + 15, y:by - codo/2 + 2, fill:'var(--tenue)',
+              'font-family':"'Space Mono',monospace", 'font-size':12.5}, '1 codo');
+  el('text', {x:bx + 15, y:by - codo/2 + 16, fill:'var(--tenue)',
+              'font-family':"'Space Mono',monospace", 'font-size':11.5}, '7 palmos');
   /* y los palmos que se mete, contados sobre el canto de arriba */
   for(let k = 0; k <= Math.ceil(seked.s); k++){
     const x = bx - Math.min(k, seked.s) * palmo;
@@ -1004,10 +1129,10 @@ function pintaSeked(){
                 stroke:'var(--lapis)', 'stroke-width':k <= seked.s ? 1.5 : .8});
   }
   el('text', {x:(B[0] + C[0])/2, y:by - codo - 14, fill:'var(--lapis)', 'text-anchor':'middle',
-              'font-family':"'Space Mono',monospace", 'font-size':12},
+              'font-family':"'Space Mono',monospace", 'font-size':15},
      cifra(seked.s, 2) + ' palmos');
   el('text', {x:380, y:by + 20, fill:'var(--tenue)', 'text-anchor':'middle',
-              'font-family':"'Space Mono',monospace", 'font-size':10},
+              'font-family':"'Space Mono',monospace", 'font-size':12.5},
      'el triángulo del seked, en grande');
 }
 function leeSeked(){
@@ -1111,7 +1236,7 @@ const ENCARGOS = [
       +'mi señor, eso es una herramienta excelente. Lo que ustedes llamarán π todavía no tiene nombre.',
   mal:'Póngalo, mi señor: el botón de la regla. Hay que <b>verlo encima</b> del círculo.'},
 
- {sala:'caja', pre:() => { caja.l = 4; caja.h = 6; caja.dentro = 0; },
+ {sala:'caja', pre:() => { caja.l = 4; caja.h = 6; caja.dentro = 0; caja.separadas = false; },
   t:'Dicen los canteros que una pirámide es <b>un tercio</b> de su caja. '
    +'No me lo cuentes: <b>pártemela en piezas</b> y que lo vea.',
   ok:() => caja.dentro >= 3,
@@ -1453,7 +1578,15 @@ $('ixDiag').addEventListener('click', () => {
     peor = Math.max(peor, Math.abs(areaEgipcia(dd) - areaCirculo(dd)) / areaCirculo(dd) * 100);
   di('la regla de 8/9 se queda a ' + cifra(peor, 2) + ' % de π (< 1 %)', peor < 1);
 
-  // 8 · el seked de siete palmos deja la cara a media altura
+  // 8 · lo que sobra menos lo que falta es exactamente el error de la regla
+  let bienSF = true;
+  for(let dd = 2; dd <= 20; dd++){
+    const sf = sobraYFalta(dd);
+    if(Math.abs((sf.sobra - sf.falta) - (areaEgipcia(dd) - areaCirculo(dd))) > 1e-9) bienSF = false;
+  }
+  di('sobra − falta = lo que la regla de 8/9 se pasa', bienSF);
+
+  // 9 · el seked de siete palmos deja la cara a media altura
   di('seked 7 = un codo por codo (cara a media altura)',
      Math.abs(7 / PALMOS - 1) < 1e-9);
 
