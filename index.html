@@ -1,0 +1,1303 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<!--
+  LA OBRA DE JEFEOPS · cuerpos y volúmenes
+  Manipulativo para 2.º de ESO · prototipo v0.1
+  © 2026 Andrés Asensio · CC BY-NC-SA 4.0
+
+  EL MODELO. Un cuerpo se mide LLENÁNDOLO. Esa es la única idea de la casa
+  entera, y de ella sale todo lo demás sin que haga falta una regla nueva:
+    · el prisma ....... una capa, y las capas que quepan: base × altura
+    · el cilindro ..... la base cambia de forma; la cuenta no cambia
+    · la pirámide ..... tres pirámides llenan su caja: un tercio
+    · el tronco ....... la pirámide entera menos la punta que falta
+  Y una cosa que NO es volumen y por eso va aparte: el SEKED, que no dice
+  cuánta piedra hay sino qué forma tiene. Es una razón —palmos de
+  retranqueo por codo de subida— seiscientos años antes de que nadie la
+  llamara así.
+
+  QUIÉN HABLA. Jefeops manda y Listahmes echa la cuenta: el faraón dice qué
+  quiere saber y el escriba explica lo que ha salido en el suelo de la
+  obra. El mismo reparto que Jeff y Liz en la ciudad, o que Listahmes y
+  Miut en el templo de al lado — este Listahmes es el mismo, unas cuantas
+  obras más joven.
+
+  DE DÓNDE SALE ESTO
+  · EL PAPIRO DE MOSCÚ, problema 14. Es el volumen más antiguo que se
+    conserva escrito: hacia 1850 a.C., un tronco de pirámide de base 4,
+    cima 2 y altura 6, y la respuesta —56— sale bien. La receta que da el
+    papiro es exactamente h/3·(a²+ab+b²), y aquí se ENUNCIA y después se
+    comprueba en los dos extremos: con la cima a cero sale la pirámide
+    entera, y con la cima igual a la base sale el prisma. Una fórmula que
+    se comporta bien en los extremos deja de ser magia.
+  · EL PAPIRO RHIND, problemas 41 a 43. Para el área del círculo los
+    egipcios usaban el cuadrado de lado ocho novenos del diámetro. No es π,
+    pero se le acerca a menos de un uno por ciento — y eso se MIDE en la
+    sala, no se dice. El granero redondo es su ejemplo, no uno inventado.
+  · EL SEKED, Rhind 56 a 60. La pendiente de una cara se medía en palmos
+    de retranqueo por cada codo que se sube, y el codo lleva siete palmos.
+    La gran pirámide sale a cinco palmos y medio. Es una razón entre dos
+    longitudes, que es de donde vienen luego la tangente y la semejanza.
+  · WU. La definición se enuncia y después se usa para razonar. «Volumen es
+    cuántos cubos unidad caben dentro» no es una frase de adorno: es lo que
+    se hace con las manos en el patio antes de escribir ninguna letra.
+  · BASS Y BALL. El error del alumno es una idea razonable mal aplicada.
+    Confundir el volumen con el área de la cara, o creer que doblar el lado
+    dobla la piedra, son ideas con sentido: cada respuesta falsa dice en voz
+    alta qué regla hay detrás y se refuta con un contraejemplo del suelo, no
+    con un «no».
+
+  LAS CINCO SALAS
+  1. EL PATIO · bloques apilados. Se cuenta la capa de abajo y se repite
+     hacia arriba. De ahí, y solo de ahí, sale base × altura.
+  2. EL GRANERO REDONDO · el mismo apilado con la base redonda, y la regla
+     egipcia del círculo puesta encima del círculo de verdad para ver por
+     dónde falla y cuánto.
+  3. LA CAJA · tres pirámides iguales vertidas dentro de su prisma. El
+     tercio se ve llenar, no se recita.
+  4. EL TRONCO · la pirámide a medio levantar, con la punta que falta
+     dibujada en fantasma. La cuenta del papiro de Moscú, y sus dos
+     extremos como comprobación.
+  5. EL SEKED · el perfil de la pirámide con su retranqueo. Cambia el
+     seked y cambia la pirámide; el volumen no se entera.
+
+  LA INTERFAZ COMÚN. La misma de la casa y en el mismo orden: RÓTULO (qué
+  se mide aquí), MANDOS (lo que se puede tocar), ESCENA (el dibujo, en su
+  marco) y LECTURA (lo que dice). El alumno no reaprende la interfaz al
+  cambiar de sala.
+
+  EL TURNO SE GUARDA. Desde el primer día, y no como parche: en el propio
+  aparato, sin servidor y sin cuentas, y caduca a las cuatro horas para que
+  un ordenador compartido no le pase la sesión al grupo siguiente.
+
+  LO QUE AÚN NO ESTÁ (v0.1): el taller de práctica libre, el valenciano y
+  la hoja imprimible. Las tres van en la v0.2.
+-->
+<meta name="author" content="Andrés Asensio">
+<meta name="description" content="Cuerpos y volúmenes para 2.º de ESO: el prisma, el cilindro, la pirámide y el tronco de pirámide del papiro de Moscú, medidos llenándolos.">
+<meta name="theme-color" content="#1C1813">
+<title>La obra de Jefeops</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rokkitt:wght@500;700&family=Space+Mono:wght@400;700&family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* La obra a mediodía: granito, arenisca y cuerda. El oro y el lapislázuli
+     son los de Jefeops en la línea del tiempo, y el verde es el suyo. El
+     templo de al lado se queda con sus amatistas: son dos sitios distintos
+     del mismo Egipto y no tienen por qué vestir igual. */
+  --noche:#1C1813; --panel:#272119; --panel2:#332B21; --linea:#4A3E2E;
+  --tinta:#F3ECDF; --tenue:#B0A288;
+  --arena:#C9A87C; --arenaO:#A8875C; --junta:#6E5B42;
+  --oro:#E0B24A; --lapis:#3E7FA0; --rojo:#B0392C; --verde:#7FA35C;
+  --granito:#8A8175; --granitoO:#6B6358;
+  --sombra:rgba(0,0,0,.5);
+}
+[data-modo="papel"]{
+  --noche:#FBF7EF; --panel:#FFFFFF; --panel2:#F5EFE2; --linea:#C9BBA6;
+  --tinta:#2B2419; --tenue:#6E6252;
+  --arena:#E6D3B4; --arenaO:#C0A57F; --junta:#A08C6E;
+  --oro:#A87F26; --lapis:#2E6383; --rojo:#8F2D22; --verde:#5E7F40;
+  --granito:#A8A096; --granitoO:#857D71;
+  --sombra:rgba(0,0,0,.12);
+}
+*{box-sizing:border-box}
+/* `hidden` es una promesa del HTML y cualquier display de autor la rompe
+   sin avisar. Se blinda una vez y para siempre. */
+[hidden]{display:none !important}
+html{background:var(--noche)}
+body{margin:0;color:var(--tinta);
+  background:
+    radial-gradient(ellipse 120% 55% at 50% -8%, rgba(224,178,74,.10), transparent 60%),
+    repeating-linear-gradient(0deg, rgba(255,255,255,.016) 0 1px, transparent 1px 4px),
+    var(--noche);
+  background-attachment:fixed;
+  font-family:'Atkinson Hyperlegible',system-ui,sans-serif;font-size:15px;line-height:1.55;
+  padding:12px 12px 40px;max-width:560px;margin:0 auto;-webkit-text-size-adjust:100%}
+
+/* LA HILADA. El remate de arriba no es una cenefa de templo: es un curso de
+   sillares con la junta a rompejunta, que es lo que se ve en una obra. */
+.hilada{height:14px;margin:0 -12px 9px;
+  background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='48' height='14'><g fill='none' stroke='%23C9A87C' stroke-width='1.3'><path d='M0 0.7 H48 M0 13.3 H48 M0 7 H48'/><path d='M12 0.7 V7 M36 0.7 V7 M0 7 V13.3 M24 7 V13.3 M48 7 V13.3'/></g></svg>") repeat-x center / 48px 14px;
+  opacity:.45}
+
+h1{font-family:'Rokkitt',serif;font-weight:700;font-size:25px;letter-spacing:.5px;
+  margin:0;color:var(--oro);line-height:1.08}
+.sub{font-family:'Rokkitt',serif;font-weight:500;font-size:11.5px;letter-spacing:1.3px;
+  text-transform:uppercase;color:var(--tenue);margin:2px 0 0;opacity:.85}
+.barra{display:flex;gap:4px 14px;align-items:center;flex-wrap:wrap;margin:10px 0 4px}
+.barra a,.barra button{font-family:'Rokkitt',serif;font-weight:700;font-size:13px;
+  letter-spacing:1.4px;text-transform:uppercase;color:var(--tenue);
+  background:none;border:0;padding:4px 0;cursor:pointer;text-decoration:none}
+.barra a:hover,.barra button:hover,.barra button[aria-pressed="true"]{color:var(--oro)}
+.barra a:focus-visible,.barra button:focus-visible,
+button:focus-visible,input:focus-visible{outline:2px solid var(--oro);outline-offset:3px;border-radius:4px}
+
+.panel{background:linear-gradient(180deg,var(--panel),var(--panel2));
+  border:1px solid var(--linea);border-radius:12px;padding:14px 14px 12px;margin:10px 0;
+  box-shadow:0 6px 18px var(--sombra)}
+
+/* EL RÓTULO de cada sala: qué se mide aquí. Lo pone el guion al arrancar,
+   no cada bloque por su cuenta. */
+.salaRot{margin:-2px 0 10px}
+.salaRot b{font-family:'Rokkitt',serif;font-weight:700;font-size:15px;letter-spacing:1.4px;
+  text-transform:uppercase;color:var(--oro)}
+.salaRot b::before{content:'';display:inline-block;width:7px;height:7px;border-radius:1px;
+  background:var(--arena);margin-right:8px;vertical-align:2px}
+.salaRot span{font-family:'Rokkitt',serif;font-size:13px;color:var(--tenue);margin-left:8px}
+
+/* LOS MANDOS. Una fila por cosa que se puede tocar, con su etiqueta a la
+   izquierda: se lee de un vistazo qué manda cada cual. */
+.fila{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:8px}
+.etq{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:1.4px;
+  text-transform:uppercase;color:var(--tenue);min-width:74px}
+button.n{font-family:'Space Mono',monospace;font-weight:700;font-size:14px;
+  min-width:34px;min-height:34px;padding:5px 9px;border-radius:8px;
+  border:1px solid var(--linea);background:var(--panel);color:var(--tinta);cursor:pointer}
+button.n[aria-pressed="true"]{background:var(--oro);border-color:var(--oro);color:#231B10}
+button.b{font-family:'Rokkitt',serif;font-weight:700;font-size:14px;letter-spacing:1.2px;
+  text-transform:uppercase;min-height:38px;padding:8px 14px;border-radius:9px;
+  border:1px solid var(--linea);background:var(--panel);color:var(--tinta);cursor:pointer}
+button.b:hover{border-color:var(--oro)}
+button.b.ok{background:var(--oro);border-color:var(--oro);color:#231B10}
+button.b:disabled{opacity:.4;cursor:default}
+button.b.armado{border-color:var(--rojo);color:var(--rojo)}
+
+/* LA ESCENA: el dibujo, siempre dentro de su marco, para que se sepa dónde
+   acaba el manipulativo y empieza la explicación. */
+.escena{background:var(--noche);border:1px solid var(--linea);border-radius:10px;
+  padding:10px;margin-top:10px;overflow-x:auto}
+.escena svg{display:block;width:100%;height:auto}
+
+/* LA LECTURA: lo que dice el suelo. Nunca es un veredicto de ejercicio;
+   es la descripción de lo que hay puesto. */
+.lectura{margin:10px 0 0;font-size:14.5px;color:var(--tinta)}
+.lectura b{color:var(--oro)}
+.lectura .cuenta{font-family:'Space Mono',monospace;font-size:13.5px;color:var(--arena);
+  display:block;margin:6px 0 0;overflow-x:auto;white-space:nowrap;padding-bottom:2px}
+
+/* EL ENCARGO y EL INFORME: quién habla, con su cara. */
+.encargo{position:relative;padding-left:66px;min-height:78px}
+.cara{position:absolute;left:12px;top:12px;width:44px;height:44px}
+.cara svg{width:100%;height:100%;display:block}
+.quien{font-family:'Space Mono',monospace;font-size:9.5px;letter-spacing:1.6px;
+  text-transform:uppercase;color:var(--verde);margin-bottom:4px}
+.informe .quien{color:var(--oro)}
+.informe{border-left:3px solid var(--oro)}
+.informe.mal{border-left-color:var(--rojo)}
+.encTxt{margin:0;font-size:15px}
+.encTxt b{color:var(--oro)}
+.ops{display:flex;flex-direction:column;gap:6px;margin-top:10px}
+.op{font-family:'Atkinson Hyperlegible',system-ui,sans-serif;font-size:14px;text-align:left;
+  padding:10px 12px;border-radius:9px;border:1px solid var(--linea);
+  background:var(--panel);color:var(--tinta);cursor:pointer;line-height:1.4}
+.op[aria-pressed="true"]{border-color:var(--oro);background:var(--panel2)}
+.op.fallada{border-color:var(--rojo);opacity:.65}
+.paso{font-family:'Space Mono',monospace;font-size:10.5px;letter-spacing:1.3px;
+  text-transform:uppercase;color:var(--tenue);margin-left:auto}
+
+/* EL ÍNDICE DE SALAS. Nació para probar la app sin recorrer los encargos y
+   sirve igual en clase: abre cualquier sala suelta para proyectarla. */
+.listaEnc{margin-top:8px;max-height:260px;overflow-y:auto;
+  border:1px solid var(--linea);border-radius:9px;background:var(--noche)}
+.listaEnc button{display:block;width:100%;text-align:left;background:none;border:0;
+  border-bottom:1px solid var(--linea);color:var(--tenue);cursor:pointer;
+  font-family:'Atkinson Hyperlegible',system-ui,sans-serif;font-size:13px;padding:9px 11px}
+.listaEnc button:last-child{border-bottom:0}
+.listaEnc button:hover{background:var(--panel2);color:var(--tinta)}
+.listaEnc button b{color:var(--arena);font-family:'Space Mono',monospace;font-size:11px;margin-right:6px}
+.listaEnc button.hecho b{color:var(--verde)}
+.listaEnc button.actual{color:var(--tinta);background:var(--panel2)}
+#diag{font-family:'Space Mono',monospace;font-size:11.5px;line-height:1.5;margin-top:10px}
+#diag .ok{color:var(--verde)} #diag .ko{color:var(--rojo)}
+
+.aviso{font-size:12.5px;color:var(--tenue);margin:8px 0 0}
+footer{margin-top:26px;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:1.2px;
+  text-transform:uppercase;color:var(--tenue);opacity:.75;text-align:center}
+footer a{color:var(--tenue)}
+
+@media (prefers-reduced-motion: reduce){
+  *{animation-duration:.001ms !important;transition-duration:.001ms !important}
+}
+</style>
+</head><body>
+<header>
+  <div class="hilada" aria-hidden="true"></div>
+  <h1>La obra de Jefeops</h1>
+  <p class="sub">Cuerpos y volúmenes · codos y palmos</p>
+  <nav class="barra">
+    <!-- Enlace ABSOLUTO a propósito: la línea del tiempo vive en la raíz de
+       la casa y esta app en su propio repositorio, así que uno relativo la
+       buscaría aquí dentro. Entre apps de la casa, siempre la URL entera. -->
+    <a href="https://diazepamina-creator.github.io/linea.html">← Materiales</a>
+    <button id="bIndice" aria-pressed="false">Salas</button>
+    <span style="flex:1"></span>
+    <button id="bModo">Modo papel</button>
+  </nav>
+</header>
+
+<div class="panel encargo">
+  <div class="cara" id="caraJefe"></div>
+  <div class="quien">Jefeops, faraón</div>
+  <p class="encTxt" id="encTxt"></p>
+  <div class="ops" id="ops" hidden></div>
+  <div class="fila">
+    <button class="b" id="atras" aria-label="Encargo anterior">◀</button>
+    <button class="b ok" id="comprobar">Comprobar</button>
+    <span class="paso" id="cual"></span>
+  </div>
+</div>
+<div class="panel informe encargo" id="informe" hidden>
+  <div class="cara" id="caraEscriba"></div>
+  <div class="quien">Listahmes, escriba de la obra</div>
+  <p class="encTxt" id="infTxt"></p>
+</div>
+
+<!-- ═══ EL ÍNDICE DE SALAS ═══ -->
+<div class="panel" id="pIndice" hidden>
+  <div class="salaRot"><b>Índice</b><span>las salas, sueltas</span></div>
+  <div class="fila">
+    <span class="etq">salas</span><span id="ixSalas"></span>
+  </div>
+  <div class="fila">
+    <button class="b" id="ixCerrar">Volver al encargo</button>
+    <button class="b" id="ixTodo">Marcar todo hecho</button>
+    <button class="b" id="ixCero">Empezar de cero</button>
+  </div>
+  <div class="etq" style="margin-top:12px">los encargos</div>
+  <div class="listaEnc" id="ixLista"></div>
+  <div class="fila">
+    <button class="b" id="ixDiag">Autodiagnóstico</button>
+    <span class="etq" style="min-width:0">prueba cada cuenta contra sí misma</span>
+  </div>
+  <div id="diag" hidden></div>
+</div>
+
+<!-- ═══ SALA 1 · EL PATIO ═══ -->
+<div class="panel" id="pPatio">
+  <div class="fila" style="margin-top:0">
+    <span class="etq">largo</span><span id="mLargo"></span>
+  </div>
+  <div class="fila">
+    <span class="etq">ancho</span><span id="mAncho"></span>
+  </div>
+  <div class="fila">
+    <span class="etq">alto</span><span id="mAlto"></span>
+  </div>
+  <div class="fila">
+    <span class="etq">capas</span>
+    <button class="b" id="patioCapa">Poner una capa</button>
+    <button class="b" id="patioTodo">Levantarlo entero</button>
+  </div>
+  <div class="escena"><svg class="patio" id="svgPatio" viewBox="0 0 520 300" role="img"
+    aria-label="Bloques de piedra apilados en capas"></svg></div>
+  <p class="lectura" id="lecPatio"></p>
+</div>
+
+<!-- ═══ SALA 2 · EL GRANERO REDONDO ═══ -->
+<div class="panel" id="pGranero" hidden>
+  <div class="fila" style="margin-top:0">
+    <span class="etq">diámetro</span><span id="mDiam"></span>
+  </div>
+  <div class="fila">
+    <span class="etq">altura</span><span id="mAltG"></span>
+  </div>
+  <div class="fila">
+    <span class="etq">la regla</span>
+    <button class="b" id="gRegla" aria-pressed="false">Poner el cuadrado de ⁸⁄₉</button>
+  </div>
+  <div class="escena"><svg class="granero" id="svgGranero" viewBox="0 0 520 300" role="img"
+    aria-label="Planta circular del granero con el cuadrado de ocho novenos del diámetro"></svg></div>
+  <p class="lectura" id="lecGranero"></p>
+</div>
+
+<!-- ═══ SALA 3 · LA CAJA ═══ -->
+<div class="panel" id="pCaja" hidden>
+  <div class="fila" style="margin-top:0">
+    <span class="etq">lado base</span><span id="mLadoC"></span>
+  </div>
+  <div class="fila">
+    <span class="etq">altura</span><span id="mAltC"></span>
+  </div>
+  <div class="fila">
+    <span class="etq">verter</span>
+    <button class="b" id="cajaVierte">Vaciar una pirámide dentro</button>
+    <button class="b" id="cajaCero">Sacarlo todo</button>
+  </div>
+  <div class="escena"><svg class="caja" id="svgCaja" viewBox="0 0 520 300" role="img"
+    aria-label="Un prisma que se llena con pirámides iguales"></svg></div>
+  <p class="lectura" id="lecCaja"></p>
+</div>
+
+<!-- ═══ SALA 4 · EL TRONCO ═══ -->
+<div class="panel" id="pTronco" hidden>
+  <div class="fila" style="margin-top:0">
+    <span class="etq">base</span><span id="mBase"></span>
+  </div>
+  <div class="fila">
+    <span class="etq">cima</span><span id="mCima"></span>
+  </div>
+  <div class="fila">
+    <span class="etq">altura</span><span id="mAltT"></span>
+  </div>
+  <div class="fila">
+    <span class="etq">la punta</span>
+    <button class="b" id="tPunta" aria-pressed="true">Ver la punta que falta</button>
+  </div>
+  <div class="escena"><svg class="tronco" id="svgTronco" viewBox="0 0 520 300" role="img"
+    aria-label="Pirámide truncada con la punta que le falta dibujada en fantasma"></svg></div>
+  <p class="lectura" id="lecTronco"></p>
+</div>
+
+<!-- ═══ SALA 5 · EL SEKED ═══ -->
+<div class="panel" id="pSeked" hidden>
+  <div class="fila" style="margin-top:0">
+    <span class="etq">seked</span><span id="mSeked"></span>
+  </div>
+  <div class="fila">
+    <span class="etq">altura</span><span id="mAltS"></span>
+  </div>
+  <div class="escena"><svg class="seked" id="svgSeked" viewBox="0 0 520 300" role="img"
+    aria-label="Perfil de la pirámide con el retranqueo de la cara medido en palmos"></svg></div>
+  <p class="lectura" id="lecSeked"></p>
+</div>
+
+<footer>
+  © 2026 Andrés Asensio ·
+  <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.es">CC BY-NC-SA 4.0</a>
+</footer>
+
+<script>
+const $ = id => document.getElementById(id);
+
+/* ── LAS MEDIDAS DE LA OBRA. Todo va en codos, y el codo lleva SIETE
+   palmos: no es un capricho de la app, es la medida con la que están
+   escritos el Rhind y el de Moscú. Los volúmenes salen en codos cúbicos. */
+const PALMOS = 7;
+const redondo = (x, n = 2) => Math.round(x * 10**n) / 10**n;
+/* CIFRA. Una sola función para todo lo que se escribe: coma para los
+   decimales y punto para los millares, que es como se escribe aquí. */
+function cifra(x, n = 2){
+  const v = redondo(x, n);
+  const [ent, dec] = String(v).split('.');
+  return ent.replace(/\B(?=(\d{3})+$)/g, '.') + (dec ? ',' + dec : '');
+}
+
+/* ── LAS CUENTAS. Cada una en su función y cada una probada en el
+   autodiagnóstico contra la de al lado: el prisma contra el conteo de
+   bloques, la pirámide contra tres vertidos, el tronco contra sus dos
+   extremos. ── */
+const vPrisma   = (l, a, h) => l * a * h;
+const vPiramide = (l, h) => l * l * h / 3;
+/* La receta del papiro de Moscú, tal cual: un tercio de la altura por la
+   suma del cuadrado de abajo, el de arriba y lo que miden juntos. */
+const vTronco   = (a, b, h) => h / 3 * (a*a + a*b + b*b);
+/* El área del círculo como la escribía el Rhind: el cuadrado de ocho
+   novenos del diámetro. Al lado, la de verdad, para poder restarlas. */
+const areaEgipcia = d => (8/9 * d) ** 2;
+const areaCirculo = d => Math.PI * (d/2) ** 2;
+
+/* ── LAS CARAS. Clonadas de la línea del tiempo, sin redibujar: el mismo
+   Jefeops y el mismo Listahmes que están en su parada. ── */
+const CARA_JEFE = `<svg viewBox="0 0 46 40" aria-hidden="true">
+  <path d="M18.6 19.4 L8.6 19.4 Q5.4 19.4 5.4 22.6 Q5.4 25.8 8.6 25.8 L18.6 25.8 Z"
+        fill="#7FA35C" stroke="#241C36" stroke-width="1.3" stroke-linejoin="round"/>
+  <path d="M11.6 14 Q11.6 4 23 4 Q34.4 4 34.4 14 L34.4 17 Q29 12 23 12 Q17 12 11.6 17 Z"
+        fill="#3E7FA0" stroke="#241C36" stroke-width="1.3" stroke-linejoin="round"/>
+  <path d="M11.6 14 Q9 20 10.4 28.6 L15.6 28.6 Q13.6 20 14.6 15.4 Z"
+        fill="#3E7FA0" stroke="#241C36" stroke-width="1.3" stroke-linejoin="round"/>
+  <path d="M34.4 14 Q37 20 35.6 28.6 L30.4 28.6 Q32.4 20 31.4 15.4 Z"
+        fill="#3E7FA0" stroke="#241C36" stroke-width="1.3" stroke-linejoin="round"/>
+  <ellipse cx="23" cy="19.6" rx="9.2" ry="8.4" fill="#7FA35C" stroke="#241C36" stroke-width="1.3"/>
+  <circle cx="19.8" cy="18.4" r="2.6" fill="#EFE7D6" stroke="#241C36" stroke-width="1"/>
+  <circle cx="26.2" cy="18.4" r="2.6" fill="#EFE7D6" stroke="#241C36" stroke-width="1"/>
+  <circle cx="19.8" cy="18.4" r="1" fill="#241C36"/><circle cx="26.2" cy="18.4" r="1" fill="#241C36"/>
+  <path d="M20.8 26.6 L25.2 26.6 L24.4 33.6 Q23 34.8 21.6 33.6 Z"
+        fill="#2C332A" stroke="#241C36" stroke-width="1.2" stroke-linejoin="round"/>
+</svg>`;
+const CARA_ESCRIBA = `<svg viewBox="0 0 46 42" aria-hidden="true">
+  <path d="M15 30.4 Q23 37.4 31 30.4 L32.8 32.2 Q23 40.4 13.2 32.2 Z"
+        fill="#E0B24A" stroke="#241C36" stroke-width="1.3" stroke-linejoin="round"/>
+  <ellipse cx="23" cy="21" rx="10" ry="9.4" fill="#3E7FA0" stroke="#241C36" stroke-width="1.3"/>
+  <path d="M15.4 14.4 Q24 9.6 32.6 14.4 L32 16.6 Q24 12.4 16 16.6 Z"
+        fill="#B0392C" stroke="#241C36" stroke-width="1.3" stroke-linejoin="round"/>
+  <circle cx="19.6" cy="20.4" r="2.4" fill="#EFE7D6" stroke="#241C36" stroke-width="1"/>
+  <circle cx="26.4" cy="20.4" r="2.4" fill="#EFE7D6" stroke="#241C36" stroke-width="1"/>
+  <circle cx="19.6" cy="20.4" r=".95" fill="#241C36"/><circle cx="26.4" cy="20.4" r=".95" fill="#241C36"/>
+  <path d="M17.4 20.4 L14.4 19.4" stroke="#241C36" stroke-width="1.1" stroke-linecap="round"/>
+  <rect x="34" y="12" width="5.4" height="21" rx="2.4"
+        fill="#EFE7D6" stroke="#241C36" stroke-width="1.2"/>
+</svg>`;
+$('caraJefe').innerHTML = CARA_JEFE;
+$('caraEscriba').innerHTML = CARA_ESCRIBA;
+
+/* ── LOS MANDOS DE CIFRA. Una tira de botones que se hace sola: el mismo
+   gesto en las cinco salas, así que se escribe una vez. ── */
+function tira(donde, valores, lee, pon){
+  const c = $(donde); c.innerHTML = '';
+  valores.forEach(v => {
+    const b = document.createElement('button');
+    b.className = 'n'; b.textContent = v;
+    b.setAttribute('aria-pressed', String(lee() === v));
+    b.addEventListener('click', () => { pon(v); });
+    c.appendChild(b);
+  });
+}
+
+/* ═══ SALA 1 · EL PATIO ═══════════════════════════════════════════════
+   Un cuerpo se mide LLENÁNDOLO, y aquí se llena a mano. Se pone una capa
+   —que se cuenta a ojo, largo por ancho— y luego se repite hacia arriba.
+   La fórmula no se enuncia: se queda escrita en la lectura después de
+   haberla contado, que es distinto.                                     */
+const patio = {l:4, a:3, h:3, puestas:1};
+
+function pintaPatio(){
+  const g = $('svgPatio'); g.innerHTML = '';
+  const NS = 'http://www.w3.org/2000/svg';
+  const W = 520, H = 300, {l, a, h} = patio;
+  /* Isométrica: x hacia la derecha y abajo, y hacia la izquierda y abajo,
+     z hacia arriba. El tamaño del bloque se ajusta para que el montón entero
+     quepa, y después se CENTRA por la caja que ocupa: así da igual que sea
+     una losa de 6×6×1 o una torre de 1×1×6, siempre queda en medio. */
+  const u = Math.max(11, Math.min(30, 210 / Math.max(l + a, 4), 170 / Math.max(h + 1, 3)));
+  const ex = [u * .90, u * .50], ey = [-u * .90, u * .50], ez = -u * .80;
+  const bruto = (x, y, z) => [x*ex[0] + y*ey[0], x*ex[1] + y*ey[1] + z*ez];
+  const esq = [];
+  for(const x of [0, l]) for(const y of [0, a]) for(const z of [0, h]) esq.push(bruto(x, y, z));
+  const xs = esq.map(p => p[0]), ys = esq.map(p => p[1]);
+  const dx = W/2 - (Math.min(...xs) + Math.max(...xs))/2;
+  const dy = H/2 + 8 - (Math.min(...ys) + Math.max(...ys))/2;
+  const P = (x, y, z) => { const p = bruto(x, y, z); return [p[0] + dx, p[1] + dy]; };
+
+  const cara = (pts, col, viva) => {
+    const p = document.createElementNS(NS, 'polygon');
+    p.setAttribute('points', pts.map(q => q.map(n => n.toFixed(1)).join(',')).join(' '));
+    p.setAttribute('fill', viva ? col : 'none');
+    p.setAttribute('stroke', viva ? 'var(--junta)' : 'var(--linea)');
+    p.setAttribute('stroke-width', viva ? '1' : '.8');
+    p.setAttribute('stroke-linejoin', 'round');
+    if(!viva) p.setAttribute('stroke-dasharray', '3 3');
+    g.appendChild(p);
+  };
+  /* Los bloques puestos van en piedra maciza y los que faltan por levantar,
+     en línea de puntos: se ve de un golpe cuánto lleva la obra y cuánto le
+     queda, sin tener que fiarse del color. */
+  const bloque = (x, y, z, viva) => {
+    const A = P(x, y, z+1), B = P(x+1, y, z+1), C = P(x+1, y+1, z+1), D = P(x, y+1, z+1);
+    cara([A, B, C, D], 'var(--arena)', viva);
+    cara([D, C, P(x+1, y+1, z), P(x, y+1, z)], 'var(--arenaO)', viva);
+    cara([B, C, P(x+1, y+1, z), P(x+1, y, z)], 'var(--granito)', viva);
+  };
+  /* De lejos a cerca: lo que está más abajo-derecha en pantalla tapa a lo
+     de detrás, así que se pinta al final. */
+  const orden = [];
+  for(let x = 0; x < l; x++) for(let y = 0; y < a; y++) for(let z = 0; z < h; z++) orden.push([x, y, z]);
+  orden.sort((p, q) => (p[0]+p[1]) - (q[0]+q[1]) || p[2] - q[2]);
+  orden.forEach(([x, y, z]) => bloque(x, y, z, z < patio.puestas));
+
+  /* el recuento, en el canto del marco: nunca encima de la piedra */
+  const t = document.createElementNS(NS, 'text');
+  t.setAttribute('x', 12); t.setAttribute('y', 20);
+  t.setAttribute('fill', 'var(--oro)');
+  t.setAttribute('font-family', "'Space Mono',monospace");
+  t.setAttribute('font-size', '13');
+  const n = Math.min(patio.puestas, h);
+  t.textContent = n === h ? 'levantado entero · ' + h + (h === 1 ? ' capa' : ' capas')
+                          : n + ' de ' + h + ' capas';
+  g.appendChild(t);
+}
+function leePatio(){
+  const capa = patio.l * patio.a, puestas = Math.min(patio.puestas, patio.h);
+  const v = capa * puestas, total = vPrisma(patio.l, patio.a, patio.h);
+  $('lecPatio').innerHTML =
+    'La capa de abajo lleva <b>' + patio.l + ' × ' + patio.a + ' = ' + capa + '</b> bloques. '
+    + (puestas < patio.h
+       ? 'Van <b>' + puestas + '</b> de las ' + patio.h + ' capas: ' + capa + ' × ' + puestas
+         + ' = <b>' + cifra(v, 0) + '</b> bloques puestos.'
+       : 'Y caben <b>' + patio.h + '</b> capas, así que el bloque entero son <b>'
+         + cifra(total, 0) + '</b> codos cúbicos.')
+    + '<span class="cuenta">' + patio.l + ' × ' + patio.a + ' × ' + patio.h + ' = ' + cifra(total, 0)
+    + '   ·   (lo de la capa) × (las capas que quepan)</span>';
+}
+function mandosPatio(){
+  const r = [1,2,3,4,5,6];
+  tira('mLargo', r, () => patio.l, v => { patio.l = v; patio.puestas = Math.min(patio.puestas, patio.h); pintaPatio2(); });
+  tira('mAncho', r, () => patio.a, v => { patio.a = v; pintaPatio2(); });
+  tira('mAlto',  r, () => patio.h, v => { patio.h = v; patio.puestas = Math.min(patio.puestas, v); pintaPatio2(); });
+}
+function pintaPatio2(){ mandosPatio(); pintaPatio(); leePatio(); revisa(); }
+$('patioCapa').addEventListener('click', () => {
+  patio.puestas = patio.puestas >= patio.h ? 1 : patio.puestas + 1; pintaPatio2();
+});
+$('patioTodo').addEventListener('click', () => { patio.puestas = patio.h; pintaPatio2(); });
+
+/* ═══ SALA 2 · EL GRANERO REDONDO ═════════════════════════════════════
+   La base cambia de forma y la cuenta no cambia: área por altura. Y de
+   paso, la regla con la que los egipcios medían un círculo —el cuadrado
+   de ocho novenos del diámetro— puesta ENCIMA del círculo de verdad, para
+   ver por dónde sobra y por dónde falta. El error se mide, no se dice.  */
+const granero = {d:9, h:10, regla:false};
+
+function pintaGranero(){
+  const g = $('svgGranero'); g.innerHTML = '';
+  const NS = 'http://www.w3.org/2000/svg';
+  const el = (t, at) => { const e = document.createElementNS(NS, t);
+    for(const k in at) e.setAttribute(k, at[k]); g.appendChild(e); return e; };
+  const cx = 148, cy = 158, esc = 110 / 9;      // 9 codos de diámetro llenan el marco
+  const r = granero.d / 2 * esc;
+  /* la cuadrícula de codos, que es lo que hace contable el dibujo */
+  /* la cuadrícula, del tamaño justo de lo que hay que medir: antes se
+     extendía muy por fuera del círculo y parecía papel pautado */
+  const lim = Math.max(r, 8/9 * granero.d / 2 * esc) + esc * .6;
+  const nn = Math.ceil(lim / esc);
+  for(let i = -nn; i <= nn; i++){
+    el('line', {x1:cx + i*esc, y1:cy - lim, x2:cx + i*esc, y2:cy + lim,
+                stroke:'var(--linea)', 'stroke-width':i ? .6 : 1});
+    el('line', {x1:cx - lim, y1:cy + i*esc, x2:cx + lim, y2:cy + i*esc,
+                stroke:'var(--linea)', 'stroke-width':i ? .6 : 1});
+  }
+  el('circle', {cx, cy, r, fill:'var(--arena)', 'fill-opacity':.55,
+                stroke:'var(--arena)', 'stroke-width':2});
+  if(granero.regla){
+    const lado = 8/9 * granero.d * esc;
+    el('rect', {x:cx - lado/2, y:cy - lado/2, width:lado, height:lado,
+                fill:'none', stroke:'var(--lapis)', 'stroke-width':2.4,
+                'stroke-dasharray':'7 4'});
+    el('text', {x:cx, y:cy - lado/2 - 8, fill:'var(--lapis)', 'text-anchor':'middle',
+                'font-family':"'Space Mono',monospace", 'font-size':12})
+      .textContent = 'lado = ⁸⁄₉ · ' + granero.d + ' = ' + cifra(8/9*granero.d, 2);
+  }
+  /* el alzado del granero, al lado: la misma base, levantada */
+  const bx = 330, bw = r * 2, bh = granero.h * esc * .8;
+  const by = 258 - bh;   // mismo suelo que la planta
+  /* el alzado: costado, fondo redondeado y tapa, para que se lea cilindro
+     y no un rectángulo con un sombrero */
+  el('path', {d:`M${bx} ${by} L${bx} ${by+bh} A${bw/2} ${bw/6} 0 0 0 ${bx+bw} ${by+bh} L${bx+bw} ${by} Z`,
+              fill:'var(--arenaO)', stroke:'var(--junta)', 'stroke-width':1.2});
+  el('ellipse', {cx:bx + bw/2, cy:by, rx:bw/2, ry:bw/6, fill:'var(--arena)',
+                 stroke:'var(--junta)', 'stroke-width':1.2});
+  el('line', {x1:bx + bw + 16, y1:by, x2:bx + bw + 16, y2:by + bh,
+              stroke:'var(--oro)', 'stroke-width':1.6});
+  el('text', {x:bx + bw + 22, y:by + bh/2, fill:'var(--oro)',
+              'font-family':"'Space Mono',monospace", 'font-size':12})
+    .textContent = granero.h + ' codos';
+}
+function leeGranero(){
+  const ae = areaEgipcia(granero.d), ac = areaCirculo(granero.d);
+  const err = Math.abs(ae - ac) / ac * 100;
+  $('lecGranero').innerHTML =
+    'La planta es un círculo de <b>' + granero.d + '</b> codos de diámetro. '
+    + (granero.regla
+      ? 'El escriba no usa π: cuadra el círculo con un lado de <b>⁸⁄₉ del diámetro</b> y '
+        + 'multiplica ese lado por sí mismo. Le sale <b>' + cifra(ae, 1) + '</b> codos cuadrados, '
+        + 'y el área de verdad es ' + cifra(ac, 1) + ': se queda a <b>' + cifra(err, 1)
+        + ' %</b>. Con esa herramienta, en 1800 antes de Cristo, no está nada mal.'
+      : 'Pon el cuadrado de ⁸⁄₉ encima y mira qué le sobra por las esquinas y qué le falta por los lados.')
+    + '<span class="cuenta">' + cifra(ae, 1) + ' × ' + granero.h + ' = '
+    + cifra(ae * granero.h, 1) + ' codos cúbicos   ·   (el área de la base) × (la altura)</span>';
+}
+function mandosGranero(){
+  tira('mDiam', [6,8,9,10,12], () => granero.d, v => { granero.d = v; pintaGranero2(); });
+  tira('mAltG', [4,6,8,10,12], () => granero.h, v => { granero.h = v; pintaGranero2(); });
+}
+function pintaGranero2(){ mandosGranero(); sincroBotones(); pintaGranero(); leeGranero(); revisa(); }
+$('gRegla').addEventListener('click', () => {
+  granero.regla = !granero.regla; sincroBotones(); pintaGranero2();
+});
+
+/* ═══ SALA 3 · LA CAJA ════════════════════════════════════════════════
+   Tres pirámides iguales llenan su prisma. No es una fórmula que se cae
+   del cielo: se vierte una, se ve que sobra sitio, se vierte otra, y a la
+   tercera la caja está llena. El tercio se MIRA.                        */
+const caja = {l:4, h:4, dentro:0};
+
+function pintaCaja(){
+  const g = $('svgCaja'); g.innerHTML = '';
+  const NS = 'http://www.w3.org/2000/svg';
+  const el = (t, at, txt) => { const e = document.createElementNS(NS, t);
+    for(const k in at) e.setAttribute(k, at[k]);
+    if(txt !== undefined) e.textContent = txt; g.appendChild(e); return e; };
+  const esc = 26, w = caja.l * esc, h = caja.h * esc;
+  const prof = w * .34;
+  /* centrado por el alto de lo que hay dibujado —caja más el resalte de la
+     perspectiva—, que si no la escena queda con todo el aire arriba */
+  const y0 = 150 + (h + prof * .6) / 2, x0 = 56;
+  /* el prisma, en perspectiva de caballera: se ve la tapa y un costado */
+  const sube = y0 - h;
+  el('polygon', {points:`${x0},${y0} ${x0+w},${y0} ${x0+w+prof},${y0-prof*.6} ${x0+prof},${y0-prof*.6}`,
+                 fill:'var(--granitoO)', stroke:'var(--junta)', 'stroke-width':1.2});
+  /* lo que hay vertido dentro, por tercios y desde abajo */
+  if(caja.dentro){
+    const alto = h * Math.min(caja.dentro, 3) / 3;
+    el('polygon', {points:`${x0},${y0} ${x0+w},${y0} ${x0+w},${y0-alto} ${x0},${y0-alto}`,
+                   fill:'var(--arena)', 'fill-opacity':.85});
+    el('polygon', {points:`${x0+w},${y0-alto} ${x0+w+prof},${y0-alto-prof*.6} ${x0+prof},${y0-alto-prof*.6} ${x0},${y0-alto}`,
+                   fill:'var(--arena)', 'fill-opacity':.55});
+  }
+  el('polygon', {points:`${x0},${y0} ${x0+w},${y0} ${x0+w},${sube} ${x0},${sube}`,
+                 fill:'none', stroke:'var(--oro)', 'stroke-width':2});
+  el('polygon', {points:`${x0+w},${y0} ${x0+w+prof},${y0-prof*.6} ${x0+w+prof},${sube-prof*.6} ${x0+w},${sube}`,
+                 fill:'none', stroke:'var(--oro)', 'stroke-width':1.4, 'stroke-opacity':.7});
+  el('polygon', {points:`${x0},${sube} ${x0+w},${sube} ${x0+w+prof},${sube-prof*.6} ${x0+prof},${sube-prof*.6}`,
+                 fill:'none', stroke:'var(--oro)', 'stroke-width':1.4, 'stroke-opacity':.7});
+  /* la pirámide suelta, a la derecha: la que se está vertiendo */
+  const px = 380, pw = w * .8, ph = h * .8;
+  el('polygon', {points:`${px},${y0} ${px+pw},${y0} ${px+pw/2},${y0-ph}`,
+                 fill:'var(--arena)', 'fill-opacity':.9, stroke:'var(--arenaO)', 'stroke-width':1.6});
+  el('line', {x1:px+pw/2, y1:y0, x2:px+pw/2, y2:y0-ph,
+              stroke:'var(--junta)', 'stroke-width':1, 'stroke-dasharray':'4 3'});
+  el('text', {x:px+pw/2, y:y0+18, fill:'var(--tenue)', 'text-anchor':'middle',
+              'font-family':"'Space Mono',monospace", 'font-size':11},
+     'una pirámide');
+  el('text', {x:x0+w/2, y:y0+18, fill:'var(--tenue)', 'text-anchor':'middle',
+              'font-family':"'Space Mono',monospace", 'font-size':11},
+     'su caja');
+}
+function leeCaja(){
+  const vp = vPrisma(caja.l, caja.l, caja.h), vpi = vPiramide(caja.l, caja.h);
+  const n = caja.dentro;
+  $('lecCaja').innerHTML =
+    (n === 0 ? 'La caja es un prisma de <b>' + caja.l + ' × ' + caja.l + ' × ' + caja.h
+               + ' = ' + cifra(vp, 0) + '</b> codos cúbicos, y está vacía. Vierte una pirámide dentro.'
+     : n === 1 ? 'Una pirámide dentro, y la caja se ha llenado <b>hasta un tercio</b>. Sobra sitio para dos más.'
+     : n === 2 ? 'Dos pirámides: <b>dos tercios</b>. Con una más se acaba, y eso no es casualidad.'
+     : 'Tres pirámides iguales han llenado la caja <b>exactamente</b>, sin sobrar ni faltar. '
+       + 'Por eso la pirámide es <b>un tercio</b> de su prisma: no hay que creérselo, se acaba de ver.')
+    + '<span class="cuenta">' + caja.l + ' × ' + caja.l + ' × ' + caja.h + ' ÷ 3 = '
+    + cifra(vpi, 2) + ' codos cúbicos   ·   (la caja) ÷ 3</span>';
+}
+function mandosCaja(){
+  tira('mLadoC', [2,3,4,5,6], () => caja.l, v => { caja.l = v; pintaCaja2(); });
+  tira('mAltC',  [2,3,4,5,6], () => caja.h, v => { caja.h = v; pintaCaja2(); });
+}
+function pintaCaja2(){ mandosCaja(); pintaCaja(); leeCaja(); revisa(); }
+$('cajaVierte').addEventListener('click', () => {
+  caja.dentro = caja.dentro >= 3 ? 3 : caja.dentro + 1; pintaCaja2();
+});
+$('cajaCero').addEventListener('click', () => { caja.dentro = 0; pintaCaja2(); });
+
+/* ═══ SALA 4 · EL TRONCO ══════════════════════════════════════════════
+   El problema 14 del papiro de Moscú, que es el volumen más antiguo que se
+   conserva escrito. La pirámide a medio levantar es la entera MENOS la
+   punta que todavía no está, y eso se ve con la punta dibujada en
+   fantasma. La receta del papiro se enuncia entera y luego se comprueba
+   en los extremos: cima cero devuelve la pirámide, cima igual a la base
+   devuelve el prisma. Una fórmula que aguanta sus extremos deja de ser
+   un conjuro.                                                           */
+const tronco = {a:4, b:2, h:6, punta:true};
+
+function pintaTronco(){
+  const g = $('svgTronco'); g.innerHTML = '';
+  const NS = 'http://www.w3.org/2000/svg';
+  const el = (t, at, txt) => { const e = document.createElementNS(NS, t);
+    for(const k in at) e.setAttribute(k, at[k]);
+    if(txt !== undefined) e.textContent = txt; g.appendChild(e); return e; };
+  const {a, b, h} = tronco;
+  /* la altura de la pirámide entera sale de la semejanza: si la cima mide b
+     y la base a, lo que falta hasta la punta es h·b/(a−b). */
+  const total = a === b ? h : h * a / (a - b);
+  const esc = Math.min(190 / Math.max(total, 1), 46 / Math.max(a, 1) * 2);
+  const sx = 200 / Math.max(a, 1);
+  const cx = 224, sueloY = 258;
+  const X = u => cx + u * sx / 2, Y = v => sueloY - v * esc;
+  /* la punta que falta, en fantasma */
+  if(tronco.punta && a !== b){
+    el('polygon', {points:`${X(-b)},${Y(h)} ${X(b)},${Y(h)} ${X(0)},${Y(total)}`,
+                   fill:'var(--tenue)', 'fill-opacity':.13,
+                   stroke:'var(--tenue)', 'stroke-width':1.3, 'stroke-dasharray':'6 4'});
+    el('text', {x:X(0), y:Y(total) - 8, fill:'var(--tenue)', 'text-anchor':'middle',
+                'font-family':"'Space Mono',monospace", 'font-size':11},
+       'la punta que falta');
+  }
+  /* el tronco, que es lo que hay levantado */
+  el('polygon', {points:`${X(-a)},${Y(0)} ${X(a)},${Y(0)} ${X(b)},${Y(h)} ${X(-b)},${Y(h)}`,
+                 fill:'var(--arena)', 'fill-opacity':.9,
+                 stroke:'var(--arenaO)', 'stroke-width':2, 'stroke-linejoin':'round'});
+  /* las hiladas, para que se vea que es piedra puesta y no un trapecio */
+  for(let k = 1; k < h; k++){
+    const u = a + (b - a) * k / h;
+    el('line', {x1:X(-u), y1:Y(k), x2:X(u), y2:Y(k),
+                stroke:'var(--junta)', 'stroke-width':.9, 'stroke-opacity':.7});
+  }
+  /* las cotas */
+  const cota = (x1, y1, x2, y2, txt, col) => {
+    el('line', {x1, y1, x2, y2, stroke:col, 'stroke-width':1.4});
+    el('text', {x:(x1+x2)/2, y:(y1+y2)/2 - 6, fill:col, 'text-anchor':'middle',
+                'font-family':"'Space Mono',monospace", 'font-size':11.5}, txt);
+  };
+  cota(X(-a), sueloY + 16, X(a), sueloY + 16, 'base ' + a, 'var(--oro)');
+  cota(X(-b), Y(h) - 14, X(b), Y(h) - 14, 'cima ' + b, 'var(--lapis)');
+  el('line', {x1:X(a) + 26, y1:Y(0), x2:X(a) + 26, y2:Y(h),
+              stroke:'var(--verde)', 'stroke-width':1.4});
+  el('text', {x:X(a) + 32, y:(Y(0) + Y(h))/2, fill:'var(--verde)',
+              'font-family':"'Space Mono',monospace", 'font-size':11.5}, 'alto ' + h);
+}
+function leeTronco(){
+  const {a, b, h} = tronco;
+  const v = vTronco(a, b, h);
+  const entera = vPiramide(a, a === b ? h : h * a / (a - b));
+  let remate;
+  if(b === 0) remate = 'Con la cima a <b>cero</b> ya no es un tronco: es la pirámide entera, '
+    + 'y la cuenta se queda en ' + a + '² × ' + h + ' ÷ 3. La receta se porta bien en el extremo.';
+  else if(a === b) remate = 'Con la cima <b>igual que la base</b> esto ya no se estrecha: es un prisma, '
+    + 'y la cuenta da ' + a + '² × ' + h + '. También se porta bien en este extremo.';
+  else if(a === 4 && b === 2 && h === 6) remate = 'Éste es el <b>problema 14 del papiro de Moscú</b>, '
+    + 'tal cual: base 4, cima 2, altura 6. La respuesta del escriba egipcio fue <b>56</b>, '
+    + 'hacia 1850 antes de Cristo, y es la más antigua que se conserva escrita. Sale exacta.';
+  else remate = 'La punta que falta mediría ' + cifra(entera - v, 2) + ' codos cúbicos: '
+    + 'lo levantado es la pirámide entera menos ella.';
+  $('lecTronco').innerHTML =
+    'Una pirámide a medio levantar. Se coge <b>un tercio de la altura</b> y se multiplica por '
+    + '<b>el cuadrado de la base, más el de la cima, más lo que miden los dos juntos</b>. ' + remate
+    + '<span class="cuenta">' + h + ' ÷ 3 × (' + a + '² + ' + a + '·' + b + ' + ' + b + '²) = '
+    + h + ' ÷ 3 × ' + (a*a + a*b + b*b) + ' = <tspan>' + cifra(v, 2) + '</tspan> codos cúbicos</span>';
+}
+function mandosTronco(){
+  tira('mBase', [2,3,4,5,6], () => tronco.a, v => {
+    tronco.a = v; if(tronco.b > v) tronco.b = v; pintaTronco2(); });
+  tira('mCima', [0,1,2,3,4,5,6], () => tronco.b, v => {
+    if(v > tronco.a) return; tronco.b = v; pintaTronco2(); });
+  tira('mAltT', [2,4,6,8,10], () => tronco.h, v => { tronco.h = v; pintaTronco2(); });
+}
+function pintaTronco2(){ mandosTronco(); sincroBotones(); pintaTronco(); leeTronco(); revisa(); }
+$('tPunta').addEventListener('click', () => {
+  tronco.punta = !tronco.punta; sincroBotones(); pintaTronco();
+});
+
+/* ═══ SALA 5 · EL SEKED ═══════════════════════════════════════════════
+   Esto NO es volumen, y por eso va en su propia sala: el seked dice qué
+   FORMA tiene la pirámide, no cuánta piedra lleva. Se mide en palmos de
+   retranqueo por cada codo que se sube, y el codo lleva siete palmos. Es
+   una razón entre dos longitudes —problemas 56 a 60 del Rhind—, seiscientos
+   años antes de que nadie la llamara razón, y es de donde salen luego la
+   semejanza y la tangente.                                              */
+const seked = {s:5.5, h:10};
+
+function pintaSeked(){
+  const g = $('svgSeked'); g.innerHTML = '';
+  const NS = 'http://www.w3.org/2000/svg';
+  const el = (t, at, txt) => { const e = document.createElementNS(NS, t);
+    for(const k in at) e.setAttribute(k, at[k]);
+    if(txt !== undefined) e.textContent = txt; g.appendChild(e); return e; };
+  /* el retranqueo total: por cada codo de subida, s palmos hacia dentro */
+  const retro = seked.s / PALMOS * seked.h;              // en codos
+  const sueloY = 258;
+
+  /* ── EL PERFIL, a la izquierda. Sale a la escala que quepa. ── */
+  const esc = Math.min(168 / seked.h, 118 / Math.max(retro, 1));
+  const cx = 148;
+  const X = u => cx + u * esc, Y = v => sueloY - v * esc;
+  el('line', {x1:18, y1:sueloY, x2:280, y2:sueloY, stroke:'var(--junta)', 'stroke-width':1.4});
+  el('polygon', {points:`${X(-retro)},${Y(0)} ${X(retro)},${Y(0)} ${X(0)},${Y(seked.h)}`,
+                 fill:'var(--arena)', 'fill-opacity':.88,
+                 stroke:'var(--arenaO)', 'stroke-width':2, 'stroke-linejoin':'round'});
+  el('line', {x1:X(0), y1:Y(0), x2:X(0), y2:Y(seked.h),
+              stroke:'var(--verde)', 'stroke-width':1.2, 'stroke-dasharray':'5 4'});
+  el('text', {x:X(0), y:sueloY + 18, fill:'var(--verde)', 'text-anchor':'middle',
+              'font-family':"'Space Mono',monospace", 'font-size':11.5},
+     'alto ' + seked.h + ' codos');
+  /* el trozo de cara del que se saca el triángulo, señalado sobre el perfil */
+  const marca = Math.min(1, seked.h);
+  el('polygon', {points:`${X(retro)},${Y(0)} ${X(retro)},${Y(marca)} ${X(retro - seked.s/PALMOS*marca)},${Y(marca)}`,
+                 fill:'var(--lapis)', 'fill-opacity':.55, stroke:'var(--lapis)', 'stroke-width':1.4});
+
+  /* ── EL TRIÁNGULO DEL SEKED, a la derecha y en grande. Es el gesto de la
+     sala y antes salía de trece píxeles: un codo de subida partido en sus
+     SIETE palmos, y el retranqueo contado sobre esos mismos palmos. Así se
+     ve que el seked no es un número raro, es cuántos palmos de los siete
+     se mete la cara. ── */
+  const bx = 446, by = sueloY - 6, codo = 150, palmo = codo / PALMOS;
+  const A = [bx, by], B = [bx, by - codo], C = [bx - seked.s * palmo, by - codo];
+  el('line', {x1:286, y1:by + 4, x2:474, y2:by + 4, stroke:'var(--linea)', 'stroke-width':1});
+  el('polygon', {points:`${A[0]},${A[1]} ${B[0]},${B[1]} ${C[0]},${C[1]}`,
+                 fill:'var(--lapis)', 'fill-opacity':.22,
+                 stroke:'var(--lapis)', 'stroke-width':2, 'stroke-linejoin':'round'});
+  /* los siete palmos del codo, marcados en el canto vertical */
+  for(let k = 0; k <= PALMOS; k++){
+    const y = by - k * palmo;
+    el('line', {x1:bx, y1:y, x2:bx + (k % PALMOS === 0 ? 12 : 7), y2:y,
+                stroke:'var(--tenue)', 'stroke-width':k % PALMOS === 0 ? 1.6 : 1});
+  }
+  el('text', {x:bx + 16, y:by - codo/2 + 4, fill:'var(--tenue)',
+              'font-family':"'Space Mono',monospace", 'font-size':11}, '1 codo');
+  el('text', {x:bx + 16, y:by - codo/2 + 18, fill:'var(--tenue)',
+              'font-family':"'Space Mono',monospace", 'font-size':10}, '= 7 palmos');
+  /* y los palmos que se mete, contados sobre el canto de arriba */
+  for(let k = 0; k <= Math.ceil(seked.s); k++){
+    const x = bx - Math.min(k, seked.s) * palmo;
+    el('line', {x1:x, y1:by - codo, x2:x, y2:by - codo - 7,
+                stroke:'var(--lapis)', 'stroke-width':k <= seked.s ? 1.5 : .8});
+  }
+  el('text', {x:(B[0] + C[0])/2, y:by - codo - 14, fill:'var(--lapis)', 'text-anchor':'middle',
+              'font-family':"'Space Mono',monospace", 'font-size':12},
+     cifra(seked.s, 2) + ' palmos');
+  el('text', {x:380, y:by + 20, fill:'var(--tenue)', 'text-anchor':'middle',
+              'font-family':"'Space Mono',monospace", 'font-size':10},
+     'el triángulo del seked, en grande');
+}
+function leeSeked(){
+  const retro = seked.s / PALMOS * seked.h;
+  const lado = cifra(retro * 2, 2);
+  const keops = Math.abs(seked.s - 5.5) < 1e-9;
+  $('lecSeked').innerHTML =
+    'Por cada <b>codo</b> que sube la cara se mete <b>' + cifra(seked.s, 2)
+    + ' palmos</b> hacia dentro, y el codo lleva siete. Eso es el <b>seked</b>: '
+    + 'no dice cuánta piedra hay, dice qué forma tiene. '
+    + 'Subiendo ' + seked.h + ' codos, la cara se ha retranqueado ' + cifra(retro, 2)
+    + ', así que la base mide <b>' + lado + '</b> codos de lado.'
+    + (keops ? ' Éste es el seked de la <b>gran pirámide</b>: cinco palmos y medio.'
+             : ' Más palmos, más tumbada; menos palmos, más de pie.')
+    + '<span class="cuenta">' + cifra(seked.s, 2) + ' palmos ÷ 1 codo = '
+    + cifra(seked.s, 2) + ' ÷ 7 = ' + cifra(seked.s / PALMOS, 3)
+    + ' codos por codo</span>';
+}
+function mandosSeked(){
+  tira('mSeked', [3, 4, 5, 5.5, 6, 7], () => seked.s, v => { seked.s = v; pintaSeked2(); });
+  tira('mAltS', [6, 8, 10, 12], () => seked.h, v => { seked.h = v; pintaSeked2(); });
+}
+function pintaSeked2(){ mandosSeked(); pintaSeked(); leeSeked(); revisa(); }
+
+/* ── LAS SALAS ────────────────────────────────────────────────────────── */
+const SALAS = {patio:'pPatio', granero:'pGranero', caja:'pCaja', tronco:'pTronco', seked:'pSeked'};
+const LEMAS = {
+  patio:   ['El patio',     'cuántos bloques caben'],
+  granero: ['El granero redondo', 'la base cambia, la cuenta no'],
+  caja:    ['La caja',      'tres pirámides llenan su prisma'],
+  tronco:  ['El tronco',    'la pirámide a medio levantar'],
+  seked:   ['El seked',     'cuánto se mete la cara por codo']
+};
+const PINTA = {patio:pintaPatio2, granero:pintaGranero2, caja:pintaCaja2,
+               tronco:pintaTronco2, seked:pintaSeked2};
+
+function sincroBotones(){
+  $('gRegla').setAttribute('aria-pressed', String(granero.regla));
+  $('gRegla').textContent = granero.regla ? 'Quitar el cuadrado' : 'Poner el cuadrado de ⁸⁄₉';
+  $('tPunta').setAttribute('aria-pressed', String(tronco.punta));
+  $('tPunta').textContent = tronco.punta ? 'Ocultar la punta' : 'Ver la punta que falta';
+}
+function muestraSala(cual){
+  for(const k in SALAS) $(SALAS[k]).hidden = (k !== cual);
+  sincroBotones();
+  PINTA[cual]();
+}
+
+/* ── LOS ENCARGOS ──────────────────────────────────────────────────────
+   Jefeops pide, se comprueba sobre el manipulativo y Listahmes explica lo
+   que ha salido. Con el ◀ se vuelve atrás y el informe se queda como
+   estaba, que en clase se pregunta mucho «¿qué había dicho antes?».
+   Cada encargo dice en qué sala se trabaja.                             */
+const ENCARGOS = [
+ {sala:'patio', pre:() => { patio.l = 4; patio.a = 3; patio.h = 3; patio.puestas = 1; },
+  t:'Quiero un pedestal de <b>5 codos de largo, 4 de ancho y 2 de alto</b>. '
+   +'Móntalo en el patio y dime cuánta piedra lleva.',
+  ok:() => patio.l === 5 && patio.a === 4 && patio.h === 2 && patio.puestas >= 2,
+  bien:'Veinte bloques por capa y dos capas: <b>40 codos cúbicos</b>. Fíjese en lo que ha hecho, '
+      +'mi señor, porque es lo único que haremos en toda la obra: contar una capa y repetirla '
+      +'hacia arriba. Eso es <b>el área de la base por la altura</b>, y no hay más.',
+  mal:'Todavía no. Ponga <b>5 de largo, 4 de ancho, 2 de alto</b> y levante las dos capas.'},
+
+ {sala:'patio', pre:() => { patio.l = 3; patio.a = 2; patio.h = 4; patio.puestas = 4; },
+  t:'Si <b>doblo el largo</b> de un bloque de piedra, ¿me cuesta el doble de piedra o más?',
+  ops:[
+    {t:'El doble justo: solo he cambiado una de las tres medidas.', ok:true,
+     r:'Exacto. Cada capa se hace del doble de larga, y las capas siguen siendo las mismas: '
+      +'el doble de piedra. Pruébelo en el patio, de 3 a 6 de largo, y cuente.'},
+    {t:'Cuatro veces más, porque la piedra crece por lo cuadrado.', ok:false,
+     r:'No, mi señor, y es un error con buen fondo: eso pasaría si doblara <b>dos</b> medidas a la vez. '
+      +'Doble el largo Y el ancho y verá los cuatro. Doblando solo una, va el doble.'},
+    {t:'Ocho veces más, como cuando se dobla una pirámide entera.', ok:false,
+     r:'Ocho serían si doblara las <b>tres</b>: largo, ancho y alto. Cada medida que dobla, dobla la '
+      +'piedra una vez. Aquí ha doblado una sola.'},
+    {t:'Depende de cuánto midan el ancho y el alto.', ok:false,
+     r:'No depende: sean los que sean, al doblar el largo va el doble. Póngalos como quiera en el '
+      +'patio y compruébelo — 3×2×4 son 24 y 6×2×4 son 48, pero también 3×5×1 son 15 y 6×5×1 son 30.'}]},
+
+ {sala:'granero', pre:() => { granero.d = 9; granero.h = 10; granero.regla = false; },
+  t:'El granero es <b>redondo</b>, no cuadrado. ¿De qué me sirve ahí lo del patio?',
+  ops:[
+    {t:'De todo: sigue siendo el área de la base por la altura. Lo único que cambia es cómo se mide esa base.', ok:true,
+     r:'Eso es. La cuenta no se entera de la forma de la base: apila lo mismo. Lo que cambia es '
+      +'medir un círculo en vez de un rectángulo, y para eso tenemos la regla de <b>ocho novenos</b>.'},
+    {t:'De nada: para lo redondo hace falta otra fórmula distinta.', ok:false,
+     r:'Sería una regla más que memorizar, y no hace falta. Ponga el granero de 9 codos y 10 de alto: '
+      +'es el área de la planta repetida diez veces, exactamente igual que las capas del patio.'},
+    {t:'De poco: lo redondo se mide siempre por fuera, con una cuerda.', ok:false,
+     r:'La cuerda le da el contorno, no lo que cabe dentro. Dos graneros pueden tener el mismo '
+      +'contorno y guardar grano distinto; lo que llena el granero es el área de su planta.'}]},
+
+ {sala:'granero', pre:() => { granero.d = 9; granero.h = 10; granero.regla = false; },
+  t:'Pon el <b>cuadrado de ocho novenos</b> encima de la planta y dime si nos vale.',
+  ok:() => granero.regla === true,
+  bien:'Sobra por las esquinas y falta por los lados, y las dos cosas casi se compensan: la cuenta se '
+      +'queda a menos de un <b>uno por ciento</b> del área verdadera. Con una cuerda y un papiro, '
+      +'mi señor, eso es una herramienta excelente. Lo que ustedes llamarán π todavía no tiene nombre.',
+  mal:'Póngalo, mi señor: el botón de la regla. Hay que <b>verlo encima</b> del círculo.'},
+
+ {sala:'caja', pre:() => { caja.l = 4; caja.h = 4; caja.dentro = 0; },
+  t:'Dicen los canteros que una pirámide es <b>un tercio</b> de su caja. '
+   +'No me lo cuentes: lléname la caja y que lo vea.',
+  ok:() => caja.dentro >= 3,
+  bien:'Tres pirámides iguales, ni una gota fuera. Y no es cosa de esta caja: cámbiele el lado o la '
+      +'altura y vuelva a verter — siempre tres. Por eso la pirámide es <b>la caja partida en tres</b>.',
+  mal:'Vierta pirámides dentro hasta que la caja no admita más, mi señor. Son tres.'},
+
+ {sala:'caja', pre:() => { caja.l = 6; caja.h = 3; caja.dentro = 3; },
+  t:'Una pirámide de <b>6 de lado y 3 de alto</b>. ¿Cuánta piedra?',
+  ops:[
+    {t:'36 codos cúbicos.', ok:true,
+     r:'6 por 6 por 3 son 108 en la caja, y la pirámide es su tercio: <b>36</b>. La caja primero, '
+      +'el tercio después: en ese orden no se enreda uno.'},
+    {t:'108 codos cúbicos.', ok:false,
+     r:'Eso es <b>la caja</b>, no la pirámide. Le falta partirlo en tres — mire la escena: la pirámide '
+      +'ocupa un tercio de lo que ha dicho.'},
+    {t:'54 codos cúbicos.', ok:false,
+     r:'Eso sería la <b>mitad</b> de la caja, y una pirámide no es media caja: en la escena caben tres, '
+      +'no dos. La mitad valdría para una rampa, que es otro cuerpo.'},
+    {t:'12 codos cúbicos.', ok:false,
+     r:'Ha partido en tres el lado en vez de la caja: 6 entre 3 son 2, y 2 por 6 por... no. '
+      +'Primero la caja entera, 108, y luego su tercio.'}]},
+
+ {sala:'tronco', pre:() => { tronco.a = 4; tronco.b = 2; tronco.h = 6; tronco.punta = true; },
+  t:'La pirámide está <b>a medio levantar</b>: base 4, cima 2, altura 6. '
+   +'Ponla en el suelo y dime cuánta piedra hay puesta.',
+  ok:() => tronco.a === 4 && tronco.b === 2 && tronco.h === 6,
+  bien:'<b>56 codos cúbicos</b>. Y no es una cuenta mía: es el problema catorce del <b>papiro de '
+      +'Moscú</b>, escrito hace ya mucho, y es el volumen más antiguo que se conserva puesto por '
+      +'escrito. Un tercio de la altura, por el cuadrado de abajo más el de arriba más lo que miden '
+      +'los dos juntos.',
+  mal:'Base <b>4</b>, cima <b>2</b>, altura <b>6</b>, mi señor. Como está la obra ahora mismo.'},
+
+ {sala:'tronco', pre:() => { tronco.a = 4; tronco.b = 2; tronco.h = 6; tronco.punta = true; },
+  t:'Esa receta tuya, ¿es un conjuro o se puede comprobar? '
+   +'<b>Baja la cima a cero</b> y dime qué queda.',
+  ok:() => tronco.b === 0,
+  bien:'Queda la <b>pirámide entera</b>, y la receta se convierte sola en la del tercio: sin cima, '
+      +'el cuadrado de arriba y el producto de los dos se van a cero, y sobrevive el de la base. '
+      +'Una receta que aguanta sus extremos ya no es un conjuro, mi señor: es una cuenta.',
+  mal:'Ponga la cima en <b>0</b> y mire qué le queda en el suelo.'},
+
+ {sala:'tronco', pre:() => { tronco.a = 4; tronco.b = 0; tronco.h = 6; tronco.punta = true; },
+  t:'Y al revés: <b>sube la cima hasta la base</b>. ¿Qué me sale entonces?',
+  ok:() => tronco.a === tronco.b,
+  bien:'Un <b>prisma</b>, que ya no se estrecha. Y la receta lo dice sola: con los dos cuadrados '
+      +'iguales, la suma son tres veces uno, y el tercio de la altura por tres veces la base es la '
+      +'base por la altura. La misma cuenta del patio, del primer día.',
+  mal:'Suba la cima hasta que valga <b>lo mismo que la base</b>.'},
+
+ {sala:'seked', pre:() => { seked.s = 5.5; seked.h = 10; },
+  t:'Esto ya no es piedra, es <b>forma</b>. ¿Qué mide el seked?',
+  ops:[
+    {t:'Cuánto se mete la cara hacia dentro por cada codo que sube.', ok:true,
+     r:'Eso es. Es una <b>razón</b> entre dos longitudes: palmos de retranqueo por codo de subida. '
+      +'Todavía no tiene ese nombre, pero de aquí saldrán la semejanza y, mucho después, la tangente.'},
+    {t:'Cuánta piedra lleva la pirámide.', ok:false,
+     r:'No: dos pirámides con el mismo seked pueden llevar piedra muy distinta si una es más alta. '
+      +'Cambie la altura sin tocar el seked y verá que el perfil es el mismo y el tamaño no.'},
+    {t:'Lo que mide la cara desde el suelo hasta la punta.', ok:false,
+     r:'Eso es una longitud, y el seked no lo es: es una <b>comparación</b> entre dos. Por eso vale '
+      +'igual para una pirámide grande que para una pequeña de la misma forma.'},
+    {t:'El ángulo de la cara, en grados.', ok:false,
+     r:'Va bien encaminado —dice lo mismo—, pero los grados no existen aquí. El escriba no mide '
+      +'ángulos: compara <b>dos longitudes</b>, palmos contra codos. Es la misma idea, contada con la '
+      +'regla en vez de con el transportador.'}]},
+
+ {sala:'seked', pre:() => { seked.s = 4; seked.h = 10; },
+  t:'Ponme el seked de la <b>gran pirámide</b>: cinco palmos y medio por codo.',
+  ok:() => Math.abs(seked.s - 5.5) < 1e-9,
+  bien:'Ahí está. Cinco palmos y medio de retranqueo por codo de subida — y con diez codos de alto, '
+      +'una base de casi dieciséis. Cambie ahora la altura y mire: el perfil no se mueve. '
+      +'El seked manda en la <b>forma</b>; la altura, en el <b>tamaño</b>.',
+  mal:'Cinco palmos y medio, mi señor: <b>5,5</b>.'},
+
+ {sala:'seked', pre:() => { seked.s = 7; seked.h = 10; },
+  t:'Última. Si pongo el seked a <b>siete palmos</b> por codo, ¿qué me sale?',
+  ops:[
+    {t:'Una cara a media altura: se mete un codo entero por cada codo que sube.', ok:true,
+     r:'Siete palmos son un codo, así que sube uno y se mete uno: la cara va exactamente a media '
+      +'altura. Y ahí es donde esto se conecta con lo que viene después, mi señor — comparar dos '
+      +'longitudes para saber una forma es lo que ustedes acabarán llamando <b>razón</b>, y con ello '
+      +'medirán la altura de esta obra desde el suelo, sin subirse.'},
+    {t:'Una pirámide más puntiaguda que la de cinco palmos y medio.', ok:false,
+     r:'Al revés: cuantos más palmos se mete por codo, más <b>tumbada</b> queda. Póngalo en 3 y luego '
+      +'en 7 y compare los dos perfiles.'},
+    {t:'Nada: siete palmos no cabe en un codo.', ok:false,
+     r:'Cabe justo: el codo <b>son</b> siete palmos. Por eso este caso es el redondo — un codo hacia '
+      +'dentro por cada codo hacia arriba.'}]}
+];
+
+/* ── EL MOTOR DEL ENCARGO ─────────────────────────────────────────────── */
+let papiroVisto = false;
+let enc = 0, elegida = null;
+const hechos = new Set();
+
+/* ── EL TURNO. Se guarda desde el primer día, en el propio aparato y sin
+   cuentas, y caduca a las cuatro horas: en un ordenador de clase, el grupo
+   siguiente empieza su propia obra. El «empezar de cero» del índice lo
+   borra, y pide segunda pulsación. ── */
+const GUARDADO = 'jefeops.turno.v1';
+const CADUCA = 4*60*60*1000;
+
+function guardaTurno(){
+  try{
+    localStorage.setItem(GUARDADO, JSON.stringify({
+      v:1, ts:Date.now(), enc:enc, hechos:[...hechos], modo:document.body.dataset.modo
+    }));
+  }catch(e){ /* sin almacén disponible: se sigue igual, sin guardar */ }
+}
+function leeTurno(){
+  try{
+    const d = JSON.parse(localStorage.getItem(GUARDADO) || 'null');
+    if(!d || d.v !== 1 || !Array.isArray(d.hechos)) return null;
+    if(!(d.enc >= 0 && d.enc < ENCARGOS.length)) return null;
+    if(Date.now() - d.ts > CADUCA){ borraTurno(); return null; }
+    return d;
+  }catch(e){ return null; }
+}
+function borraTurno(){ try{ localStorage.removeItem(GUARDADO); }catch(e){} }
+
+function pintaOpciones(){
+  const e = ENCARGOS[enc], caja = $('ops');
+  caja.innerHTML = ''; caja.hidden = !e.ops;
+  if(!e.ops) return;
+  e.ops.forEach((o, i) => {
+    const b = document.createElement('button');
+    b.className = 'op'; b.textContent = o.t;
+    b.setAttribute('aria-pressed', String(elegida === i));
+    b.addEventListener('click', () => {
+      if(hechos.has(enc)) return;               // resuelto: ya no se toca
+      elegida = i; pintaOpciones();
+    });
+    caja.appendChild(b);
+  });
+}
+function pintaEncargo(){
+  const e = ENCARGOS[enc], ultimo = enc === ENCARGOS.length - 1, hecho = hechos.has(enc);
+  if(e.pre) e.pre();
+  muestraSala(e.sala);
+  elegida = hecho && e.ops ? e.ops.findIndex(o => o.ok) : null;
+  pintaOpciones();
+  $('encTxt').innerHTML = (ultimo && hecho)
+    ? '<b>Obra cerrada.</b> Todo lo que hemos hecho en estas cinco salas era lo mismo: '
+      + 'mirar cuánto cabe dentro. Una capa repetida hacia arriba, la caja partida en tres, '
+      + 'la entera menos la punta. Y el seked, que no cuenta piedra sino que decide la forma — '
+      + 'y ése volverá a aparecer, mi señor, el día que alguien quiera medir esta pirámide '
+      + 'desde su sombra.'
+    : e.t;
+  $('cual').textContent = (ultimo && hecho) ? 'obra cerrada'
+    : 'encargo ' + (enc + 1) + ' de ' + ENCARGOS.length;
+  $('atras').disabled = enc === 0;
+  $('comprobar').textContent = !hecho ? 'Comprobar'
+    : (ultimo ? 'Empezar de nuevo' : 'Siguiente encargo →');
+  const inf = $('informe');
+  inf.hidden = !hecho;
+  if(hecho){
+    inf.className = 'panel informe encargo';
+    $('infTxt').innerHTML = e.ops ? e.ops.find(o => o.ok).r : e.bien;
+  }
+  pintaIndice();
+}
+/* REVISA. Cada vez que se toca un mando, el encargo de comprobación mira si
+   ya está puesto lo que se pedía — así el alumno ve el informe en cuanto lo
+   consigue, sin tener que adivinar que hay que pulsar Comprobar otra vez. */
+function revisa(){
+  const e = ENCARGOS[enc];
+  if(!e || e.ops || !hechos.has(enc)) return;
+  $('informe').hidden = false;
+}
+$('comprobar').addEventListener('click', () => {
+  const e = ENCARGOS[enc], inf = $('informe');
+  if(hechos.has(enc)){
+    if(enc < ENCARGOS.length - 1){ enc++; pintaEncargo(); }
+    else { hechos.clear(); enc = 0; pintaEncargo(); }
+    guardaTurno();
+    return;
+  }
+  let bien, dice;
+  if(e.ops){
+    if(elegida === null){ bien = false; dice = 'Elija una, mi señor.'; }
+    else { bien = e.ops[elegida].ok; dice = e.ops[elegida].r;
+           if(!bien) document.querySelectorAll('.op')[elegida].classList.add('fallada'); }
+  }else{ bien = e.ok(); dice = bien ? e.bien : e.mal; }
+  inf.hidden = false;
+  inf.className = 'panel informe encargo' + (bien ? '' : ' mal');
+  $('infTxt').innerHTML = dice;
+  if(bien){ hechos.add(enc); pintaEncargo(); inf.hidden = false; guardaTurno(); }
+});
+$('atras').addEventListener('click', () => {
+  if(enc > 0){ enc--; pintaEncargo(); guardaTurno(); }
+});
+
+/* ── EL ÍNDICE DE SALAS ───────────────────────────────────────────────── */
+function pintaIndice(){
+  const s = $('ixSalas');
+  if(!s.dataset.puesto){
+    s.dataset.puesto = '1';
+    Object.keys(SALAS).forEach(k => {
+      const b = document.createElement('button');
+      b.className = 'b'; b.textContent = LEMAS[k][0];
+      b.addEventListener('click', () => { muestraSala(k); $('pIndice').hidden = true;
+        $('bIndice').setAttribute('aria-pressed', 'false');
+        $(SALAS[k]).scrollIntoView({behavior:'smooth', block:'start'}); });
+      s.appendChild(b);
+    });
+  }
+  const l = $('ixLista'); l.innerHTML = '';
+  ENCARGOS.forEach((e, i) => {
+    const b = document.createElement('button');
+    b.className = (hechos.has(i) ? 'hecho ' : '') + (i === enc ? 'actual' : '');
+    b.innerHTML = '<b>' + String(i + 1).padStart(2, '0') + '</b>'
+                + LEMAS[e.sala][0] + ' · ' + e.t.replace(/<[^>]*>/g, '').slice(0, 52) + '…';
+    b.addEventListener('click', () => {
+      enc = i; pintaEncargo(); $('pIndice').hidden = true;
+      $('bIndice').setAttribute('aria-pressed', 'false');
+      guardaTurno(); scrollTo({top:0, behavior:'smooth'});
+    });
+    l.appendChild(b);
+  });
+}
+$('bIndice').addEventListener('click', () => {
+  const abre = $('pIndice').hidden;
+  $('pIndice').hidden = !abre;
+  $('bIndice').setAttribute('aria-pressed', String(abre));
+  if(abre) pintaIndice();
+});
+$('ixCerrar').addEventListener('click', () => {
+  $('pIndice').hidden = true; $('bIndice').setAttribute('aria-pressed', 'false');
+  pintaEncargo(); scrollTo({top:0, behavior:'smooth'});
+});
+$('ixTodo').addEventListener('click', () => {
+  ENCARGOS.forEach((_, i) => hechos.add(i)); enc = ENCARGOS.length - 1;
+  pintaEncargo(); guardaTurno();
+});
+/* EMPEZAR DE CERO borra también lo guardado en el aparato, así que pide el
+   segundo toque —como en la terminal— y se desarma solo a los cinco
+   segundos: desde aquí se tira el trabajo de toda la obra. */
+{
+  let armado = false, reloj = 0;
+  const desarma = () => { armado = false; clearTimeout(reloj);
+    $('ixCero').classList.remove('armado'); $('ixCero').textContent = 'Empezar de cero'; };
+  $('ixCero').addEventListener('click', () => {
+    if(!armado){
+      armado = true; $('ixCero').classList.add('armado');
+      $('ixCero').textContent = 'Pulsa otra vez para borrarlo';
+      clearTimeout(reloj); reloj = setTimeout(desarma, 5000);
+      return;
+    }
+    desarma(); borraTurno(); hechos.clear(); enc = 0; pintaEncargo();
+  });
+}
+$('bModo').addEventListener('click', () => {
+  const papel = document.body.dataset.modo === 'papel';
+  document.body.dataset.modo = papel ? 'pantalla' : 'papel';
+  $('bModo').textContent = papel ? 'Modo papel' : 'Modo pantalla';
+  guardaTurno();
+});
+
+/* ── EL AUTODIAGNÓSTICO ───────────────────────────────────────────────
+   Cada cuenta se prueba contra la de al lado, no contra sí misma: el
+   prisma contra el conteo de bloques uno a uno, la pirámide contra tres
+   vertidos, el tronco contra sus dos extremos, y la regla egipcia del
+   círculo contra π. Lo que salga en rojo, está roto.                   */
+$('ixDiag').addEventListener('click', () => {
+  const d = $('diag'); d.hidden = false;
+  const li = [];
+  const di = (txt, ok) => li.push('<div class="' + (ok ? 'ok' : 'ko') + '">'
+    + (ok ? '✓ ' : '✗ ') + txt + '</div>');
+
+  // 1 · el prisma, contra el conteo de bloques de uno en uno
+  let cuenta = 0;
+  for(let x = 0; x < 5; x++) for(let y = 0; y < 4; y++) for(let z = 0; z < 3; z++) cuenta++;
+  di('el prisma contado bloque a bloque (' + cuenta + ') = la fórmula', cuenta === vPrisma(5,4,3));
+
+  // 2 · la pirámide, contra tres vertidos en su caja
+  let bienTercio = true;
+  for(let l = 1; l <= 8; l++) for(let h = 1; h <= 8; h++)
+    if(Math.abs(3 * vPiramide(l, h) - vPrisma(l, l, h)) > 1e-9) bienTercio = false;
+  di('tres pirámides llenan su prisma, en 64 tamaños', bienTercio);
+
+  // 3 · el tronco con la cima a cero es la pirámide entera
+  let bienCero = true;
+  for(let a = 1; a <= 9; a++) for(let h = 1; h <= 9; h++)
+    if(Math.abs(vTronco(a, 0, h) - vPiramide(a, h)) > 1e-9) bienCero = false;
+  di('tronco con cima 0 = pirámide entera', bienCero);
+
+  // 4 · el tronco con la cima igual a la base es el prisma
+  let bienPrisma = true;
+  for(let a = 1; a <= 9; a++) for(let h = 1; h <= 9; h++)
+    if(Math.abs(vTronco(a, a, h) - vPrisma(a, a, h)) > 1e-9) bienPrisma = false;
+  di('tronco con cima = base = prisma', bienPrisma);
+
+  // 5 · el problema 14 del papiro de Moscú
+  di('papiro de Moscú, problema 14 (4, 2, 6) = 56', Math.abs(vTronco(4, 2, 6) - 56) < 1e-9);
+
+  // 6 · el tronco, contra la resta de dos pirámides semejantes
+  let bienResta = true;
+  for(const [a, b, h] of [[4,2,6],[6,3,9],[8,2,4],[5,1,7],[9,4,5]]){
+    const total = h * a / (a - b);
+    const resta = vPiramide(a, total) - vPiramide(b, total - h);
+    if(Math.abs(resta - vTronco(a, b, h)) > 1e-9) bienResta = false;
+  }
+  di('tronco = pirámide entera − la punta que falta', bienResta);
+
+  // 7 · la regla egipcia del círculo se queda a menos del 1 % de π
+  let peor = 0;
+  for(let dd = 1; dd <= 20; dd++)
+    peor = Math.max(peor, Math.abs(areaEgipcia(dd) - areaCirculo(dd)) / areaCirculo(dd) * 100);
+  di('la regla de ⁸⁄₉ se queda a ' + cifra(peor, 2) + ' % de π (< 1 %)', peor < 1);
+
+  // 8 · el seked de siete palmos deja la cara a media altura
+  di('seked 7 = un codo por codo (cara a media altura)',
+     Math.abs(7 / PALMOS - 1) < 1e-9);
+
+  // 9 · cada encargo tiene sala válida
+  di('los ' + ENCARGOS.length + ' encargos apuntan a una sala que existe',
+     ENCARGOS.every(e => SALAS[e.sala]));
+
+  // 10 · cada encargo se puede corregir
+  di('los ' + ENCARGOS.length + ' encargos se saben corregir',
+     ENCARGOS.every(e => (e.ops && e.ops.length) || typeof e.ok === 'function'));
+
+  // 11 · una sola respuesta correcta, y con explicación
+  di('cada encargo de opciones tiene UNA correcta, y todas explican',
+     ENCARGOS.filter(e => e.ops).every(e =>
+       e.ops.filter(o => o.ok).length === 1 && e.ops.every(o => o.r && o.r.length > 20)));
+
+  // 12 · los encargos de comprobación traen su pre y sus dos textos
+  di('cada encargo de manipulativo trae pre, bien y mal',
+     ENCARGOS.filter(e => !e.ops).every(e => e.pre && e.bien && e.mal));
+
+  // 13 · las cinco salas tienen rótulo y quien las pinte
+  di('las ' + Object.keys(SALAS).length + ' salas tienen rótulo y pintor',
+     Object.keys(SALAS).every(k => LEMAS[k] && PINTA[k]));
+
+  d.innerHTML = li.join('');
+});
+
+/* ── EL VESTIDO DE LAS SALAS. El rótulo se pone desde un solo sitio al
+   arrancar, no bloque a bloque: si mañana hay una sala más, se añade a
+   LEMAS y ya está vestida. ── */
+(function(){
+  Object.keys(SALAS).forEach(k => {
+    const pan = $(SALAS[k]), [nom, lema] = LEMAS[k];
+    const rot = document.createElement('div');
+    rot.className = 'salaRot';
+    rot.innerHTML = '<b>' + nom + '</b><span>' + lema + '</span>';
+    pan.insertBefore(rot, pan.firstChild);
+  });
+})();
+
+/* ── LA APERTURA. Si el aparato guarda un turno de hace menos de cuatro
+   horas, la obra se abre por donde se dejó. Si no, por el primer encargo. */
+{
+  const d = leeTurno();
+  document.body.dataset.modo = (d && d.modo === 'papel') ? 'papel' : 'pantalla';
+  if(document.body.dataset.modo === 'papel') $('bModo').textContent = 'Modo pantalla';
+  if(d){
+    enc = d.enc;
+    d.hechos.forEach(i => { if(i >= 0 && i < ENCARGOS.length) hechos.add(i); });
+  }
+  pintaEncargo();
+}
+</script>
+</body></html>
