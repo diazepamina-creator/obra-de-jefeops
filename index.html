@@ -95,6 +95,7 @@
   --arena:#C9A87C; --arenaO:#A8875C; --junta:#6E5B42;
   --oro:#E0B24A; --lapis:#3E7FA0; --rojo:#B0392C; --verde:#7FA35C;
   --granito:#8A8175; --granitoO:#6B6358;
+  --cuenta:#C9A87C;
   --sombra:rgba(0,0,0,.5);
 }
 [data-modo="papel"]{
@@ -103,6 +104,7 @@
   --arena:#E6D3B4; --arenaO:#C0A57F; --junta:#A08C6E;
   --oro:#A87F26; --lapis:#2E6383; --rojo:#8F2D22; --verde:#5E7F40;
   --granito:#A8A096; --granitoO:#857D71;
+  --cuenta:#7A6448;
   --sombra:rgba(0,0,0,.12);
 }
 *{box-sizing:border-box}
@@ -177,7 +179,7 @@ button.b.armado{border-color:var(--rojo);color:var(--rojo)}
    es la descripción de lo que hay puesto. */
 .lectura{margin:10px 0 0;font-size:14.5px;color:var(--tinta)}
 .lectura b{color:var(--oro)}
-.lectura .cuenta{font-family:'Space Mono',monospace;font-size:13.5px;color:var(--arena);
+.lectura .cuenta{font-family:'Space Mono',monospace;font-size:13.5px;color:var(--cuenta);
   display:block;margin:6px 0 0;overflow-x:auto;white-space:nowrap;padding-bottom:2px}
 
 /* EL ENCARGO y EL INFORME: quién habla, con su cara. */
@@ -502,7 +504,7 @@ function tira(donde, valores, lee, pon){
   const c = $(donde); c.innerHTML = '';
   valores.forEach(v => {
     const b = document.createElement('button');
-    b.className = 'n'; b.textContent = v;
+    b.className = 'n'; b.textContent = typeof v === 'number' ? cifra(v, 2) : v;
     b.setAttribute('aria-pressed', String(lee() === v));
     b.addEventListener('click', () => { pon(v); });
     c.appendChild(b);
