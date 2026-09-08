@@ -10,7 +10,7 @@
   entera, y de ella sale todo lo demás sin que haga falta una regla nueva:
     · el prisma ....... una capa, y las capas que quepan: base × altura
     · el cilindro ..... la base cambia de forma; la cuenta no cambia
-    · la pirámide ..... tres pirámides llenan su caja: un tercio
+    · la pirámide ..... la caja partida en tres piezas iguales: un tercio
     · el tronco ....... la pirámide entera menos la punta que falta
   Y una cosa que NO es volumen y por eso va aparte: el SEKED, que no dice
   cuánta piedra hay sino qué forma tiene. Es una razón —palmos de
@@ -54,8 +54,11 @@
   2. EL GRANERO REDONDO · el mismo apilado con la base redonda, y la regla
      egipcia del círculo puesta encima del círculo de verdad para ver por
      dónde falla y cuánto.
-  3. LA CAJA · tres pirámides iguales vertidas dentro de su prisma. El
-     tercio se ve llenar, no se recita.
+  3. LA CAJA · el prisma partido en tres pirámides que salen de la misma
+     esquina (Euclides XII.7). Con la caja cúbica son la misma pieza girada,
+     y una caja más alta es ese cubo estirado. El tercio se ve, y lo que
+     no se demuestra aquí —mover la punta al centro— se dice que no se
+     demuestra aquí.
   4. EL TRONCO · la pirámide a medio levantar, con la punta que falta
      dibujada en fantasma. La cuenta del papiro de Moscú, y sus dos
      extremos como comprobación.
@@ -321,12 +324,12 @@ footer a{color:var(--tenue)}
     <span class="etq">altura</span><span id="mAltC"></span>
   </div>
   <div class="fila">
-    <span class="etq">verter</span>
-    <button class="b" id="cajaVierte">Vaciar una pirámide dentro</button>
-    <button class="b" id="cajaCero">Sacarlo todo</button>
+    <span class="etq">piezas</span>
+    <button class="b" id="cajaVierte">Poner la siguiente pieza</button>
+    <button class="b" id="cajaCero">Vaciar la caja</button>
   </div>
   <div class="escena"><svg class="caja" id="svgCaja" viewBox="0 0 520 300" role="img"
-    aria-label="Un prisma que se llena con pirámides iguales"></svg></div>
+    aria-label="Un prisma partido en tres pirámides que salen de la misma esquina"></svg></div>
   <p class="lectura" id="lecCaja"></p>
 </div>
 
@@ -668,10 +671,24 @@ $('gRegla').addEventListener('click', () => {
 });
 
 /* ═══ SALA 3 · LA CAJA ════════════════════════════════════════════════
-   Tres pirámides iguales llenan su prisma. No es una fórmula que se cae
-   del cielo: se vierte una, se ve que sobra sitio, se vierte otra, y a la
-   tercera la caja está llena. El tercio se MIRA.                        */
+   La caja se PARTE en tres pirámides, y las tres salen de la misma esquina
+   de arriba: una tiene por base el suelo de la caja, otra la pared derecha
+   y otra la pared del fondo. Es la descomposición de siempre —la de
+   Euclides XII.7, la de Liu Hui— y es la única que se puede enseñar sin
+   mentir: «tres pirámides iguales llenan la caja» solo es literalmente
+   cierto para el cubo. Con la caja cúbica, las tres piezas son LA MISMA
+   girada, así que cada una es un tercio; y una caja más alta es un cubo
+   estirado hacia arriba, que estira las tres piezas por igual (Wu: escalar
+   en una dirección multiplica todos los volúmenes por lo mismo). La punta
+   de la primera pieza queda sobre una esquina, no sobre el centro, y que
+   eso no cambie el volumen es asunto del gabinete de Cavalieri, río abajo.
+   Aquí se dice; allí se demuestra.                                        */
 const caja = {l:4, h:4, dentro:0};
+const PIEZAS = [
+  {col:'var(--arena)', nombre:'suelo',         base:'suelo'},
+  {col:'var(--lapis)', nombre:'pared derecha', base:'derecha'},
+  {col:'var(--verde)', nombre:'pared del fondo', base:'fondo'}
+];
 
 function pintaCaja(){
   const g = $('svgCaja'); g.innerHTML = '';
@@ -679,64 +696,103 @@ function pintaCaja(){
   const el = (t, at, txt) => { const e = document.createElementNS(NS, t);
     for(const k in at) e.setAttribute(k, at[k]);
     if(txt !== undefined) e.textContent = txt; g.appendChild(e); return e; };
-  const esc = 26, w = caja.l * esc, h = caja.h * esc;
-  const prof = w * .34;
-  /* centrado por el alto de lo que hay dibujado —caja más el resalte de la
-     perspectiva—, que si no la escena queda con todo el aire arriba */
-  const y0 = 150 + (h + prof * .6) / 2, x0 = 56;
-  /* el prisma, en perspectiva de caballera: se ve la tapa y un costado */
-  const sube = y0 - h;
-  el('polygon', {points:`${x0},${y0} ${x0+w},${y0} ${x0+w+prof},${y0-prof*.6} ${x0+prof},${y0-prof*.6}`,
-                 fill:'var(--granitoO)', stroke:'var(--junta)', 'stroke-width':1.2});
-  /* lo que hay vertido dentro, por tercios y desde abajo */
-  if(caja.dentro){
-    const alto = h * Math.min(caja.dentro, 3) / 3;
-    el('polygon', {points:`${x0},${y0} ${x0+w},${y0} ${x0+w},${y0-alto} ${x0},${y0-alto}`,
-                   fill:'var(--arena)', 'fill-opacity':.85});
-    el('polygon', {points:`${x0+w},${y0-alto} ${x0+w+prof},${y0-alto-prof*.6} ${x0+prof},${y0-alto-prof*.6} ${x0},${y0-alto}`,
-                   fill:'var(--arena)', 'fill-opacity':.55});
-  }
-  el('polygon', {points:`${x0},${y0} ${x0+w},${y0} ${x0+w},${sube} ${x0},${sube}`,
-                 fill:'none', stroke:'var(--oro)', 'stroke-width':2});
-  el('polygon', {points:`${x0+w},${y0} ${x0+w+prof},${y0-prof*.6} ${x0+w+prof},${sube-prof*.6} ${x0+w},${sube}`,
-                 fill:'none', stroke:'var(--oro)', 'stroke-width':1.4, 'stroke-opacity':.7});
-  el('polygon', {points:`${x0},${sube} ${x0+w},${sube} ${x0+w+prof},${sube-prof*.6} ${x0+prof},${sube-prof*.6}`,
-                 fill:'none', stroke:'var(--oro)', 'stroke-width':1.4, 'stroke-opacity':.7});
-  /* la pirámide suelta, a la derecha: la que se está vertiendo */
-  const px = 380, pw = w * .8, ph = h * .8;
-  el('polygon', {points:`${px},${y0} ${px+pw},${y0} ${px+pw/2},${y0-ph}`,
-                 fill:'var(--arena)', 'fill-opacity':.9, stroke:'var(--arenaO)', 'stroke-width':1.6});
-  el('line', {x1:px+pw/2, y1:y0, x2:px+pw/2, y2:y0-ph,
+  const pts = q => q.map(p => p[0].toFixed(1) + ',' + p[1].toFixed(1)).join(' ');
+  /* perspectiva caballera: el frente de cara y el fondo corrido en diagonal */
+  const esc = Math.min(30, 150 / Math.max(caja.l, caja.h));
+  const w = caja.l * esc, H = caja.h * esc, prof = w * .55;
+  const dx = prof * .7, dy = -prof * .5;
+  const x0 = 260 - (w + dx) / 2, y0 = 150 + (H - dy) / 2;
+  const F0 = [x0, y0], F1 = [x0 + w, y0], F2 = [x0 + w, y0 - H], F3 = [x0, y0 - H];
+  const B0 = [F0[0] + dx, F0[1] + dy], B1 = [F1[0] + dx, F1[1] + dy];
+  const B2 = [F2[0] + dx, F2[1] + dy], B3 = [F3[0] + dx, F3[1] + dy];
+  /* la esquina común: arriba, delante, a la izquierda. Con la punta arriba,
+     la pieza del suelo es una pirámide de pie, que es la que se busca. */
+  const A = F3;
+  const BASES = {suelo:[F0, F1, B1, B0], derecha:[F1, F2, B2, B1], fondo:[B0, B1, B2, B3]};
+
+  /* las aristas de la caja que quedan detrás, primero y a puntos */
+  el('polyline', {points:pts([B0, B1]) + ' ' + pts([B1, B2]), fill:'none',
+                  stroke:'var(--junta)', 'stroke-width':1, 'stroke-dasharray':'4 3'});
+  el('line', {x1:B0[0], y1:B0[1], x2:B3[0], y2:B3[1],
               stroke:'var(--junta)', 'stroke-width':1, 'stroke-dasharray':'4 3'});
-  el('text', {x:px+pw/2, y:y0+18, fill:'var(--tenue)', 'text-anchor':'middle',
-              'font-family':"'Space Mono',monospace", 'font-size':11},
-     'una pirámide');
-  el('text', {x:x0+w/2, y:y0+18, fill:'var(--tenue)', 'text-anchor':'middle',
-              'font-family':"'Space Mono',monospace", 'font-size':11},
-     'su caja');
+  el('line', {x1:B0[0], y1:B0[1], x2:F0[0], y2:F0[1],
+              stroke:'var(--junta)', 'stroke-width':1, 'stroke-dasharray':'4 3'});
+
+  /* las piezas puestas: cada pirámide, con su base y sus cuatro caras en su
+     color, translúcidas para que se vea que ocupan sitio y no se tapan */
+  PIEZAS.slice(0, Math.min(caja.dentro, 3)).forEach(pz => {
+    const Q = BASES[pz.base];
+    el('polygon', {points:pts(Q), fill:pz.col, 'fill-opacity':.42,
+                   stroke:pz.col, 'stroke-width':1.6, 'stroke-linejoin':'round'});
+    for(let i = 0; i < 4; i++)
+      el('polygon', {points:pts([A, Q[i], Q[(i+1) % 4]]), fill:pz.col, 'fill-opacity':.22,
+                     stroke:pz.col, 'stroke-width':1.2, 'stroke-linejoin':'round'});
+  });
+
+  /* la caja, encima, en oro: es el marco de todo */
+  el('polygon', {points:pts([F0, F1, F2, F3]), fill:'none', stroke:'var(--oro)', 'stroke-width':2});
+  el('polygon', {points:pts([F1, B1, B2, F2]), fill:'none', stroke:'var(--oro)', 'stroke-width':1.5,
+                 'stroke-opacity':.75});
+  el('polygon', {points:pts([F3, F2, B2, B3]), fill:'none', stroke:'var(--oro)', 'stroke-width':1.5,
+                 'stroke-opacity':.75});
+  /* la esquina común, señalada */
+  el('circle', {cx:A[0], cy:A[1], r:4.5, fill:'var(--oro)', stroke:'var(--noche)', 'stroke-width':1.5});
+  el('text', {x:A[0] - 8, y:A[1] - 9, fill:'var(--oro)', 'text-anchor':'end',
+              'font-family':"'Space Mono',monospace", 'font-size':11}, 'la esquina');
+  /* las cotas */
+  el('text', {x:(F0[0] + F1[0]) / 2, y:y0 + 17, fill:'var(--tenue)', 'text-anchor':'middle',
+              'font-family':"'Space Mono',monospace", 'font-size':11}, 'lado ' + caja.l);
+  el('text', {x:F1[0] + dx + 8, y:(F1[1] + F2[1]) / 2 + dy, fill:'var(--tenue)',
+              'font-family':"'Space Mono',monospace", 'font-size':11}, 'alto ' + caja.h);
+  /* la leyenda de las piezas, en el pie del marco */
+  PIEZAS.forEach((pz, i) => {
+    const puesta = i < caja.dentro, x = 16 + i * 170, y = 284;
+    el('rect', {x, y:y - 10, width:11, height:11, rx:2, fill:pz.col,
+                'fill-opacity':puesta ? .8 : .15, stroke:pz.col, 'stroke-width':1});
+    el('text', {x:x + 17, y, fill:puesta ? 'var(--tinta)' : 'var(--tenue)',
+                'font-family':"'Space Mono',monospace", 'font-size':10.5},
+       (i + 1) + '.ª · ' + pz.nombre);
+  });
 }
 function leeCaja(){
-  const vp = vPrisma(caja.l, caja.l, caja.h), vpi = vPiramide(caja.l, caja.h);
-  const n = caja.dentro;
-  $('lecCaja').innerHTML =
-    (n === 0 ? 'La caja es un prisma de <b>' + caja.l + ' × ' + caja.l + ' × ' + caja.h
-               + ' = ' + cifra(vp, 0) + '</b> codos cúbicos, y está vacía. Vierte una pirámide dentro.'
-     : n === 1 ? 'Una pirámide dentro, y la caja se ha llenado <b>hasta un tercio</b>. Sobra sitio para dos más.'
-     : n === 2 ? 'Dos pirámides: <b>dos tercios</b>. Con una más se acaba, y eso no es casualidad.'
-     : 'Tres pirámides iguales han llenado la caja <b>exactamente</b>, sin sobrar ni faltar. '
-       + 'Por eso la pirámide es <b>un tercio</b> de su prisma: no hay que creérselo, se acaba de ver.')
-    + '<span class="cuenta">' + caja.l + ' × ' + caja.l + ' × ' + caja.h + ' ÷ 3 = '
+  const {l, h} = caja;
+  const vp = vPrisma(l, l, h), vpi = vPiramide(l, h);
+  const n = Math.min(caja.dentro, 3), cubo = l === h;
+  const texto = [
+    'La caja es un prisma de <b>' + l + ' × ' + l + ' × ' + h + ' = ' + cifra(vp, 0)
+      + '</b> codos cúbicos. Vamos a partirla en tres piezas, y las tres van a salir de '
+      + '<b>la misma esquina</b> de arriba.',
+    'La primera pieza es una <b>pirámide</b>: su base es el suelo entero de la caja, '
+      + l + ' × ' + l + ', y su punta llega hasta arriba, a ' + h + ' de alto. Tiene '
+      + '<b>exactamente la base y la altura de la caja</b>. La punta le queda sobre una '
+      + 'esquina, no sobre el centro; de eso hablamos luego.',
+    'La segunda también es una pirámide, con la pared derecha por base y la punta en '
+      + 'la misma esquina. Queda un hueco con forma de… otra pirámide.',
+    'Tres pirámides <b>llenan la caja sin sobrar ni faltar</b>. '
+      + (cubo
+        ? 'Y como la caja es <b>cúbica</b>, las tres piezas son <b>la misma, girada</b>: '
+          + 'suelo, pared derecha y pared del fondo son cuadrados iguales, a la misma '
+          + 'distancia de la esquina. Tres piezas iguales que llenan la caja: cada una es '
+          + '<b>un tercio</b>. Eso no es una regla, es una cuenta.'
+        : 'Ponga el lado igual que la altura y mire: con la caja cúbica las tres piezas son '
+          + 'la misma, girada, y cada una es un tercio. Esta caja es <b>ese cubo estirado</b> '
+          + (h > l ? 'hacia arriba' : 'hacia los lados') + ': al estirar, las tres piezas se '
+          + 'estiran igual y siguen valiendo lo mismo. Sigue siendo un tercio.')
+  ][n];
+  $('lecCaja').innerHTML = texto
+    + '<span class="cuenta">' + l + ' × ' + l + ' × ' + h + ' ÷ 3 = '
     + cifra(vpi, 2) + ' codos cúbicos   ·   (la caja) ÷ 3</span>';
 }
 function mandosCaja(){
   tira('mLadoC', [2,3,4,5,6], () => caja.l, v => { caja.l = v; pintaCaja2(); });
   tira('mAltC',  [2,3,4,5,6], () => caja.h, v => { caja.h = v; pintaCaja2(); });
 }
-function pintaCaja2(){ mandosCaja(); pintaCaja(); leeCaja(); revisa(); }
+function pintaCaja2(){ mandosCaja(); pintaCaja(); leeCaja(); $('cajaVierte').disabled = caja.dentro >= 3; revisa(); }
 $('cajaVierte').addEventListener('click', () => {
   caja.dentro = caja.dentro >= 3 ? 3 : caja.dentro + 1; pintaCaja2();
+  $('cajaVierte').disabled = caja.dentro >= 3;
 });
-$('cajaCero').addEventListener('click', () => { caja.dentro = 0; pintaCaja2(); });
+$('cajaCero').addEventListener('click', () => { caja.dentro = 0; pintaCaja2(); $('cajaVierte').disabled = false; });
 
 /* ═══ SALA 4 · EL TRONCO ══════════════════════════════════════════════
    El problema 14 del papiro de Moscú, que es el volumen más antiguo que se
@@ -924,7 +980,7 @@ const SALAS = {patio:'pPatio', granero:'pGranero', caja:'pCaja', tronco:'pTronco
 const LEMAS = {
   patio:   ['El patio',     'cuántos bloques caben'],
   granero: ['El granero redondo', 'la base cambia, la cuenta no'],
-  caja:    ['La caja',      'tres pirámides llenan su prisma'],
+  caja:    ['La caja',      'partida en tres desde una esquina'],
   tronco:  ['El tronco',    'la pirámide a medio levantar'],
   seked:   ['El seked',     'cuánto se mete la cara por codo']
 };
@@ -995,13 +1051,43 @@ const ENCARGOS = [
       +'mi señor, eso es una herramienta excelente. Lo que ustedes llamarán π todavía no tiene nombre.',
   mal:'Póngalo, mi señor: el botón de la regla. Hay que <b>verlo encima</b> del círculo.'},
 
- {sala:'caja', pre:() => { caja.l = 4; caja.h = 4; caja.dentro = 0; },
+ {sala:'caja', pre:() => { caja.l = 4; caja.h = 6; caja.dentro = 0; },
   t:'Dicen los canteros que una pirámide es <b>un tercio</b> de su caja. '
-   +'No me lo cuentes: lléname la caja y que lo vea.',
+   +'No me lo cuentes: <b>pártemela en piezas</b> y que lo vea.',
   ok:() => caja.dentro >= 3,
-  bien:'Tres pirámides iguales, ni una gota fuera. Y no es cosa de esta caja: cámbiele el lado o la '
-      +'altura y vuelva a verter — siempre tres. Por eso la pirámide es <b>la caja partida en tres</b>.',
-  mal:'Vierta pirámides dentro hasta que la caja no admita más, mi señor. Son tres.'},
+  bien:'Tres piezas, mi señor, y las tres son pirámides que salen de la misma esquina: la del '
+      +'suelo, la de la pared derecha y la del fondo. Llenan la caja sin sobrar ni faltar. '
+      +'Falta saber si las tres <b>valen lo mismo</b> — que es lo que hace de esto un tercio.',
+  mal:'Ponga las piezas una a una hasta que la caja no admita más. Son tres.'},
+
+ {sala:'caja', pre:() => { caja.l = 4; caja.h = 6; caja.dentro = 3; },
+  t:'¿Y cómo sé que esas tres piezas valen lo mismo? No se parecen. '
+   +'<b>Pon la caja cúbica</b> —el lado igual que la altura— y vuelve a mirarlas.',
+  ok:() => caja.dentro >= 3 && caja.l === caja.h,
+  bien:'Con la caja cúbica, las tres piezas son <b>la misma pirámide girada</b>: suelo, pared '
+      +'derecha y fondo son cuadrados iguales, todos a la misma distancia de la esquina. Tres '
+      +'piezas iguales que llenan la caja: <b>un tercio cada una</b>, sin regla que creerse. '
+      +'Y la caja de antes, más alta que ancha, no es más que este cubo <b>estirado hacia '
+      +'arriba</b>: al estirar, las tres piezas se estiran por igual y siguen valiendo lo mismo.',
+  mal:'El lado y la altura tienen que ser <b>iguales</b>, con las tres piezas puestas.'},
+
+ {sala:'caja', pre:() => { caja.l = 4; caja.h = 4; caja.dentro = 3; },
+  t:'Una cosa más. La punta de tu primera pieza cae sobre <b>una esquina</b>, y mis '
+   +'pirámides la tienen en el centro. ¿Me estás colando otra cosa?',
+  ops:[
+    {t:'No: mover la punta de sitio sin cambiar la altura no cambia el volumen. Pero eso, aquí, no lo demuestro.', ok:true,
+     r:'Bien dicho, y bien callado. Es verdad, y no es evidente: una pirámide con la punta '
+      +'sobre la esquina y otra con la punta sobre el centro, misma base y misma altura, tienen '
+      +'el mismo volumen. Aquí se lo <b>digo</b>; que se lo <b>demuestren</b> es asunto de otro '
+      +'gabinete, dentro de tres mil años. Saber qué se ha demostrado y qué no es parte del oficio.'},
+    {t:'Sí: la de la esquina es más grande, porque está más inclinada.', ok:false,
+     r:'Inclinada sí; más grande no. Piense en un montón de láminas apiladas: si las corre hacia '
+      +'un lado, el montón se tumba pero sigue teniendo las mismas láminas. La altura y la base '
+      +'no han cambiado, y el volumen tampoco.'},
+    {t:'Da igual, porque las dos son pirámides y todas las pirámides valen un tercio.', ok:false,
+     r:'Un tercio <b>de su caja</b>, y eso es lo que estamos justificando: no vale usarlo para '
+      +'justificarse a sí mismo. La pregunta buena es por qué la punta puede moverse sin que '
+      +'cambie la cuenta.'}]},
 
  {sala:'caja', pre:() => { caja.l = 6; caja.h = 3; caja.dentro = 3; },
   t:'Una pirámide de <b>6 de lado y 3 de alto</b>. ¿Cuánta piedra?',
@@ -1010,13 +1096,13 @@ const ENCARGOS = [
      r:'6 por 6 por 3 son 108 en la caja, y la pirámide es su tercio: <b>36</b>. La caja primero, '
       +'el tercio después: en ese orden no se enreda uno.'},
     {t:'108 codos cúbicos.', ok:false,
-     r:'Eso es <b>la caja</b>, no la pirámide. Le falta partirlo en tres — mire la escena: la pirámide '
-      +'ocupa un tercio de lo que ha dicho.'},
+     r:'Eso es <b>la caja</b>, no la pirámide. Le falta partirlo en tres — mire la escena: la '
+      +'pirámide es una de las tres piezas.'},
     {t:'54 codos cúbicos.', ok:false,
-     r:'Eso sería la <b>mitad</b> de la caja, y una pirámide no es media caja: en la escena caben tres, '
-      +'no dos. La mitad valdría para una rampa, que es otro cuerpo.'},
+     r:'Eso sería la <b>mitad</b> de la caja, y una pirámide no es media caja: en la escena hay '
+      +'tres piezas, no dos. La mitad valdría para una rampa, que es otro cuerpo.'},
     {t:'12 codos cúbicos.', ok:false,
-     r:'Ha partido en tres el lado en vez de la caja: 6 entre 3 son 2, y 2 por 6 por... no. '
+     r:'Ha partido en tres el lado en vez de la caja: 6 entre 3 son 2, y 2 por 6 por… no. '
       +'Primero la caja entera, 108, y luego su tercio.'}]},
 
  {sala:'tronco', pre:() => { tronco.a = 4; tronco.b = 2; tronco.h = 6; tronco.punta = true; },

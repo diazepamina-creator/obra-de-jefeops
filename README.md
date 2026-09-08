@@ -18,7 +18,7 @@ dos longitudes.
 
 Una pirámide a medio levantar es un tronco de pirámide, y hay que saber cuánta
 piedra lleva antes de subirla. Jefeops manda la obra y Listahmes echa la
-cuenta: doce encargos, cada uno sobre un manipulativo que se toca.
+cuenta: catorce encargos, cada uno sobre un manipulativo que se toca.
 
 Todo sale de **una sola idea** —un cuerpo se mide llenándolo—, para que el
 alumno no acabe con cuatro fórmulas sueltas.
@@ -30,8 +30,10 @@ alumno no acabe con cuatro fórmulas sueltas.
 - **El granero redondo** — el mismo apilado con la base circular, y la regla
   egipcia del círculo (el cuadrado de ⁸⁄₉ del diámetro) puesta **encima** del
   círculo de verdad para ver por dónde falla y cuánto.
-- **La caja** — tres pirámides iguales vertidas dentro de su prisma. El tercio
-  se ve llenar, no se recita.
+- **La caja** — el prisma partido en tres pirámides que salen de la misma
+  esquina. Con la caja cúbica son la misma pieza girada; una caja más alta es
+  ese cubo estirado. Y lo que aquí no se demuestra —que la punta pueda irse al
+  centro— se dice que no se demuestra aquí.
 - **El tronco** — la pirámide a medio levantar, con la punta que falta dibujada
   en fantasma. La cuenta del papiro de Moscú y sus dos extremos como
   comprobación.
