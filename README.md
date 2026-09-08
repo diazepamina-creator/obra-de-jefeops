@@ -54,17 +54,23 @@ alumno no acabe con cuatro fórmulas sueltas.
 - **Modo papel** para proyectar o imprimir, con la misma paleta aclarada.
 - **Índice de salas**: abre cualquier sala suelta —sin encargo, con todos sus
   mandos— para explicarla en la pizarra, o salta a un encargo concreto.
-- **Autodiagnóstico**: catorce comprobaciones que prueban cada cuenta contra la
-  de al lado —el prisma contra el conteo bloque a bloque, la pirámide contra
-  tres vertidos, el tronco contra sus dos extremos, la regla de ⁸⁄₉ contra π—.
-  Lo que salga en rojo, está roto.
+- **El taller**: práctica libre con seis tipos de ejercicio generados al azar
+  —uno por sala y otro de sí o no—, corrección con explicación, racha y «verlo
+  en la sala», que pone el ejercicio en el manipulativo con sus mismos números.
+- **Hoja de diez** imprimible, con la clave del profesor en hoja aparte.
+- **Las deudas**: donde la obra afirma algo que no demuestra, lo apunta y
+  contesta a «¿por qué es así?» —la punta al centro, el ocho novenos, el cubo
+  estirado— y dice dónde se demuestra del todo.
+- **Autodiagnóstico**: dieciséis comprobaciones que prueban cada cuenta contra
+  la de al lado —el prisma contra el conteo bloque a bloque, el tronco contra
+  sus dos extremos, la regla de 8/9 contra π, los generadores del taller contra
+  su propia solución—. Lo que salga en rojo, está roto.
 - **El turno se guarda en el propio aparato**: una recarga no borra el trabajo.
   Caduca a las cuatro horas y hay un «empezar de cero» en el índice.
 
 ## Lo que aún no está
 
-Prototipo **v0.1**. Faltan el taller de práctica libre, el valenciano y la hoja
-imprimible.
+Prototipo **v0.2**. Falta el valenciano.
 
 ## Requisitos
 

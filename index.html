@@ -3,7 +3,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <!--
   LA OBRA DE JEFEOPS · cuerpos y volúmenes
-  Manipulativo para 2.º de ESO · prototipo v0.1
+  Manipulativo para 2.º de ESO · prototipo v0.2
   © 2026 Andrés Asensio · CC BY-NC-SA 4.0
 
   EL MODELO. Un cuerpo se mide LLENÁNDOLO. Esa es la única idea de la casa
@@ -74,8 +74,17 @@
   aparato, sin servidor y sin cuentas, y caduca a las cuatro horas para que
   un ordenador compartido no le pase la sesión al grupo siguiente.
 
-  LO QUE AÚN NO ESTÁ (v0.1): el taller de práctica libre, el valenciano y
-  la hoja imprimible. Las tres van en la v0.2.
+  EL TALLER · práctica libre con seis tipos de ejercicio generados al azar
+  —uno por sala y otro de sí o no—, corrección con explicación, racha,
+  «verlo en la sala» (el ejercicio se pone en el manipulativo con sus
+  mismos números) y una hoja de diez imprimible con la clave aparte.
+  LAS DEUDAS · donde la obra afirma algo que no demuestra, lo apunta y
+  contesta a «¿por qué es así?»: la punta al centro (Cavalieri), el ocho
+  novenos del Rhind 48 (el octógono de 63) y por qué estirar la caja no
+  rompe los tercios. Saber qué está demostrado y qué no es parte del
+  oficio, y la casa ya tenía el mueble en la terminal.
+  LO QUE AÚN NO ESTÁ (v0.2): el valenciano. Va en la v0.3, y pide antes
+  partir las lecturas en frases con clave, como en la pizzería.
 -->
 <meta name="author" content="Andrés Asensio">
 <meta name="description" content="Cuerpos y volúmenes para 2.º de ESO: el prisma, el cilindro, la pirámide y el tronco de pirámide del papiro de Moscú, medidos llenándolos.">
@@ -222,6 +231,46 @@ footer{margin-top:26px;font-family:'Space Mono',monospace;font-size:10px;letter-
   text-transform:uppercase;color:var(--tenue);opacity:.75;text-align:center}
 footer a{color:var(--tenue)}
 
+/* EL TALLER. Práctica libre: el mismo mueble que en el templo. */
+.taller{border-left:3px solid var(--oro)}
+.tipos{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.tipos button.b{font-size:12.5px;padding:6px 10px;min-height:34px}
+.ejer{font-size:17px;margin:14px 0 8px;line-height:1.5}
+.ejer b{color:var(--oro)}
+.resp{font-family:'Space Mono',monospace;font-size:16px;padding:8px 10px;border-radius:9px;
+  border:1px solid var(--linea);background:var(--noche);color:var(--tinta);width:140px}
+.veredicto{margin-top:9px;padding:9px 11px;border:1px solid var(--linea);border-radius:9px;
+  font-size:14px;color:var(--tinta);background:var(--noche)}
+.veredicto.bien{border-color:var(--oro)}
+.veredicto b{color:var(--oro)}
+.marcador{display:flex;gap:16px;margin-top:10px;font-family:'Space Mono',monospace;font-size:11px;
+  letter-spacing:1.2px;text-transform:uppercase;color:var(--tenue)}
+.marcador b{color:var(--oro);font-size:13px;margin-left:4px}
+
+/* LAS DEUDAS. Donde la obra dice algo que no demuestra, lo apunta aquí y
+   contesta a «¿por qué es así?». El mueble es el de la terminal. */
+.deuda{border-top:1px solid var(--linea);padding:10px 0}
+.deuda:last-child{border-bottom:1px solid var(--linea)}
+.deuda summary{cursor:pointer;font-weight:700;color:var(--tinta);font-size:15px;list-style:none;
+  display:flex;gap:10px;align-items:baseline}
+.deuda summary::-webkit-details-marker{display:none}
+.deuda summary::before{content:'¿por qué es así?';font-family:'Space Mono',monospace;font-size:9.5px;
+  letter-spacing:1.3px;text-transform:uppercase;color:var(--oro);white-space:nowrap}
+.deuda[open] summary::before{content:'porque'}
+.deuda p{margin:8px 0 0;font-size:14px;color:var(--tenue);max-width:62ch}
+.deuda p b{color:var(--tinta)}
+
+/* la hoja de diez: solo existe para imprimirse */
+.hoja{display:none}
+body.imprimiendo .hoja{display:block;background:#fff;color:#222;padding:20px;font-family:Georgia,serif}
+body.imprimiendo > *:not(.hoja){display:none !important}
+.hoja h2{font-family:'Rokkitt',serif;font-size:20px;margin:0 0 4px}
+.hoja .cab{font-size:12px;color:#666;margin-bottom:14px}
+.hoja ol{padding-left:22px;font-size:15px;line-height:2.1}
+.hoja .clave{break-before:page;page-break-before:always;margin-top:30px;border-top:1px solid #999;padding-top:10px}
+.hoja .clave ol{line-height:1.7;font-size:13px}
+@media print{ .hoja{display:block} }
+
 /* lo recién puesto entra con un fundido corto; quien pida menos movimiento
    no lo tiene, por la regla de abajo */
 @keyframes aparece{from{opacity:0}to{opacity:1}}
@@ -240,7 +289,9 @@ footer a{color:var(--tenue)}
        la casa y esta app en su propio repositorio, así que uno relativo la
        buscaría aquí dentro. Entre apps de la casa, siempre la URL entera. -->
     <a href="https://diazepamina-creator.github.io/linea.html">← Materiales</a>
+    <button id="bTaller" aria-pressed="false">Taller</button>
     <button id="bIndice" aria-pressed="false">Salas</button>
+    <button id="bDeudas" aria-pressed="false">Deudas</button>
     <span style="flex:1"></span>
     <button id="bModo">Modo papel</button>
   </nav>
@@ -261,6 +312,75 @@ footer a{color:var(--tenue)}
   <div class="cara" id="caraEscriba"></div>
   <div class="quien">Listahmes, escriba de la obra</div>
   <p class="encTxt" id="infTxt"></p>
+</div>
+
+<!-- ═══ EL TALLER ═══ -->
+<div class="panel taller" id="pTaller" hidden>
+  <div class="salaRot"><b>El taller</b><span>práctica libre, y a la sala si hace falta</span></div>
+  <div class="tipos" id="tipos"></div>
+  <div class="ejer" id="ejer"></div>
+  <div class="fila" style="margin-top:6px" id="filaSiNo" hidden>
+    <button class="b" id="bSi">Sí</button>
+    <button class="b" id="bNo">No</button>
+  </div>
+  <div class="fila" style="margin-top:6px" id="filaResp">
+    <input class="resp" id="resp" type="text" inputmode="decimal" autocomplete="off" placeholder="tu respuesta">
+    <button class="b ok" id="corrige">Corregir</button>
+  </div>
+  <div class="fila" style="margin-top:6px">
+    <button class="b" id="otro">Otro</button>
+    <button class="b" id="verlo" hidden>Verlo en la sala</button>
+  </div>
+  <div class="veredicto" id="verTaller" hidden></div>
+  <div class="marcador">
+    <span>aciertos <b id="tAc">0</b></span><span>racha <b id="tRacha">0</b></span>
+    <span>mejor <b id="tMejor">0</b></span>
+  </div>
+  <div class="fila">
+    <button class="b" id="hojaDiez">Imprimir una hoja de diez</button>
+    <span class="etq" style="min-width:0">con la clave en hoja aparte</span>
+  </div>
+</div>
+<div class="hoja" id="hoja"></div>
+
+<!-- ═══ LAS DEUDAS ═══ -->
+<div class="panel" id="pDeudas" hidden>
+  <div class="salaRot"><b>Las deudas</b><span>lo que la obra dice y no demuestra</span></div>
+  <p class="aviso" style="margin:0 0 10px">Tres cosas se afirman en las salas sin demostrarse allí. Aquí
+  se apunta cada una, se explica por qué es verdad y se dice dónde se demuestra del todo. Saber qué
+  está demostrado y qué no es parte del oficio.</p>
+
+  <details class="deuda">
+    <summary>La punta de la pirámide puede irse de la esquina al centro sin que cambie el volumen</summary>
+    <p>Piense la pirámide como un <b>montón de láminas</b> finísimas, una por cada altura. Si empuja
+    el montón de lado para que la punta pase de la esquina al centro, cada lámina se <b>corre</b>, pero
+    ninguna cambia de tamaño: son las mismas láminas, en el mismo orden. Mismo montón, misma piedra.</p>
+    <p>Lo que hay que comprobar es que a cada altura las dos pirámides tienen la <b>misma lámina</b>, y
+    eso lo da la semejanza: a la altura z, la lámina es la base encogida en la misma proporción en las
+    dos. Esto se llama <b>principio de Cavalieri</b>, y su gabinete —siglo XVII, en la línea del
+    tiempo— existe para demostrarlo con calma. Aquí se usa; allí se prueba.</p>
+  </details>
+
+  <details class="deuda">
+    <summary>Por qué el escriba cuadra el círculo con ocho novenos del diámetro</summary>
+    <p>Es el problema 48 del papiro Rhind, y no es magia. El escriba dibuja un cuadrado de <b>9 × 9</b>
+    alrededor del círculo de diámetro 9 y le corta las cuatro esquinas por la mitad de cada lado: queda
+    un <b>octógono</b> que se parece mucho al círculo. Su área es 81 menos cuatro triángulos de
+    3 × 3 ÷ 2, es decir, 81 − 18 = <b>63</b>.</p>
+    <p>Y 63 está a un paso de 64, que es 8 × 8. Así que el círculo de diámetro 9 «vale» un cuadrado de
+    lado 8: <b>ocho novenos</b>. No es una demostración, es una aproximación bien elegida; y el granero
+    mide cuánto se pasa: menos de un uno por ciento.</p>
+  </details>
+
+  <details class="deuda">
+    <summary>Por qué estirar la caja hacia arriba no rompe los tercios</summary>
+    <p>El volumen es <b>contar cubos</b>. Si la caja se estira al doble de alto, cada cubo se vuelve
+    dos cubos: <b>todo</b> lo que hay dentro se multiplica por dos, las tres piezas incluidas. Como las
+    tres eran iguales antes de estirar, siguen siéndolo después.</p>
+    <p>Con un estirón de una vez y media, o de cualquier otro número, es lo mismo partiendo el cubo en
+    trozos más finos, como los medios codos del patio. Wu lo llama escalar en una dirección: multiplica
+    todos los volúmenes por lo mismo, y por eso conserva las proporciones entre ellos.</p>
+  </details>
 </div>
 
 <!-- ═══ EL ÍNDICE DE SALAS ═══ -->
@@ -708,7 +828,7 @@ function pintaGranero(){
                 'font-family':"'Space Mono',monospace", 'font-size':15}).textContent = rot;
   }
   /* el alzado del granero, al lado: la misma base, levantada */
-  const bx = 330, bw = r * 2, bh = granero.h * esc * .8;
+  const bx = 330, bw = Math.min(r * 2, 150), bh = granero.h * esc * .8;
   const by = 258 - bh;   // mismo suelo que la planta
   /* el alzado: costado, fondo redondeado y tapa, para que se lea cilindro
      y no un rectángulo con un sombrero */
@@ -753,7 +873,7 @@ function leeGranero(){
     + cifra(ae * granero.h, 1) + ' codos cúbicos   ·   (el área de la capa) × (las capas)</span>';
 }
 function mandosGranero(){
-  tira('mDiam', [6,8,9,10,12], () => granero.d, v => { granero.d = v; pintaGranero2(); });
+  tira('mDiam', [6,8,9,10,12,18], () => granero.d, v => { granero.d = v; pintaGranero2(); });
   tira('mAltG', [4,6,8,10,12], () => granero.h, v => { granero.h = v; pintaGranero2(); });
 }
 function pintaGranero2(){ mandosGranero(); sincroBotones(); pintaGranero(); leeGranero(); revisa(); }
@@ -1042,7 +1162,7 @@ function mandosTronco(){
     tronco.a = v; if(tronco.b > v) tronco.b = v; pintaTronco2(); });
   tira('mCima', [0,1,2,3,4,5,6], () => tronco.b, v => {
     if(v > tronco.a) return; tronco.b = v; pintaTronco2(); });
-  tira('mAltT', [2,4,6,8,10], () => tronco.h, v => { tronco.h = v; pintaTronco2(); });
+  tira('mAltT', [2,3,4,6,8,9,10], () => tronco.h, v => { tronco.h = v; pintaTronco2(); });
 }
 function pintaTronco2(){ mandosTronco(); sincroBotones(); pintaTronco(); leeTronco(); revisa(); }
 $('tPunta').addEventListener('click', () => {
@@ -1197,7 +1317,16 @@ const ENCARGOS = [
   bien:'Veinte bloques por capa y dos capas: <b>40 codos cúbicos</b>. Fíjese en lo que ha hecho, '
       +'mi señor, porque es lo único que haremos en toda la obra: contar una capa y repetirla '
       +'hacia arriba. Eso es <b>el área de la base por la altura</b>, y no hay más.',
-  mal:'Todavía no. Ponga <b>5 de largo, 4 de ancho, 2 de alto</b> y levante las dos capas.'},
+  mal:() => {
+    const faltan = [];
+    if(patio.l !== 5) faltan.push('el largo está en ' + cifra(patio.l, 1) + ' y tiene que ser <b>5</b>');
+    if(patio.a !== 4) faltan.push('el ancho está en ' + cifra(patio.a, 1) + ' y tiene que ser <b>4</b>');
+    if(patio.h !== 2) faltan.push('el alto está en ' + patio.h + ' y tiene que ser <b>2</b>');
+    if(faltan.length) return 'Casi: ' + faltan.join('; ') + '.';
+    return 'Las medidas están, mi señor, pero solo hay <b>' + patio.puestas + ' capa'
+      + (patio.puestas === 1 ? '' : 's') + '</b> puesta' + (patio.puestas === 1 ? '' : 's')
+      + ': levántelo entero para poder contarlo.';
+  }},
 
  {sala:'patio', pre:() => { patio.l = 3; patio.a = 2; patio.h = 4; patio.puestas = 4; },
   t:'Si <b>doblo el largo</b> de un bloque de piedra, ¿me cuesta el doble de piedra o más?',
@@ -1243,7 +1372,10 @@ const ENCARGOS = [
   bien:'Tres piezas, mi señor, y las tres son pirámides que salen de la misma esquina: la del '
       +'suelo, la de la pared derecha y la del fondo. Llenan la caja sin sobrar ni faltar. '
       +'Falta saber si las tres <b>valen lo mismo</b> — que es lo que hace de esto un tercio.',
-  mal:'Ponga las piezas una a una hasta que la caja no admita más. Son tres.'},
+  mal:() => caja.dentro === 0
+    ? 'La caja está vacía, mi señor: ponga la primera pieza.'
+    : 'Van <b>' + caja.dentro + '</b> pieza' + (caja.dentro === 1 ? '' : 's') + ' y todavía cabe'
+      + (3 - caja.dentro === 1 ? ' una' : 'n ' + (3 - caja.dentro)) + ' más. Mire el hueco: tiene forma de pirámide.'},
 
  {sala:'caja', pre:() => { caja.l = 4; caja.h = 6; caja.dentro = 3; },
   t:'¿Y cómo sé que esas tres piezas valen lo mismo? No se parecen. '
@@ -1254,7 +1386,10 @@ const ENCARGOS = [
       +'piezas iguales que llenan la caja: <b>un tercio cada una</b>, sin regla que creerse. '
       +'Y la caja de antes, más alta que ancha, no es más que este cubo <b>estirado hacia '
       +'arriba</b>: al estirar, las tres piezas se estiran por igual y siguen valiendo lo mismo.',
-  mal:'El lado y la altura tienen que ser <b>iguales</b>, con las tres piezas puestas.'},
+  mal:() => caja.l !== caja.h
+    ? 'El lado está en ' + caja.l + ' y la altura en ' + caja.h + ': para que sea cúbica tienen que ser '
+      + '<b>iguales</b>. ' + (caja.h > caja.l ? 'Baje la altura o suba el lado.' : 'Suba la altura o baje el lado.')
+    : 'Ya es cúbica; ahora ponga las <b>tres</b> piezas, que van ' + caja.dentro + '.'},
 
  {sala:'caja', pre:() => { caja.l = 4; caja.h = 4; caja.dentro = 3; },
   t:'Una cosa más. La punta de tu primera pieza cae sobre <b>una esquina</b>, y mis '
@@ -1298,7 +1433,13 @@ const ENCARGOS = [
       +'Moscú</b>, escrito hace ya mucho, y es el volumen más antiguo que se conserva puesto por '
       +'escrito. Un tercio de la altura, por el cuadrado de abajo más el de arriba más lo que miden '
       +'los dos juntos.',
-  mal:'Base <b>4</b>, cima <b>2</b>, altura <b>6</b>, mi señor. Como está la obra ahora mismo.'},
+  mal:() => {
+    const f = [];
+    if(tronco.a !== 4) f.push('la base está en ' + tronco.a + ', y es <b>4</b>');
+    if(tronco.b !== 2) f.push('la cima está en ' + tronco.b + ', y es <b>2</b>');
+    if(tronco.h !== 6) f.push('la altura está en ' + tronco.h + ', y es <b>6</b>');
+    return 'Como está la obra ahora mismo, mi señor: ' + f.join('; ') + '.';
+  }},
 
  {sala:'tronco', pre:() => { tronco.a = 4; tronco.b = 2; tronco.h = 6; tronco.punta = true; },
   t:'Esa receta tuya, ¿es un conjuro o se puede comprobar? '
@@ -1307,7 +1448,8 @@ const ENCARGOS = [
   bien:'Queda la <b>pirámide entera</b>, y la receta se convierte sola en la del tercio: sin cima, '
       +'el cuadrado de arriba y el producto de los dos se van a cero, y sobrevive el de la base. '
       +'Una receta que aguanta sus extremos ya no es un conjuro, mi señor: es una cuenta.',
-  mal:'Ponga la cima en <b>0</b> y mire qué le queda en el suelo.'},
+  mal:() => 'La cima está en <b>' + tronco.b + '</b>: bájela hasta <b>0</b>'
+    + (tronco.b === 1 ? ', que le falta un paso' : '') + ' y mire qué le queda en el suelo.'},
 
  {sala:'tronco', pre:() => { tronco.a = 4; tronco.b = 0; tronco.h = 6; tronco.punta = true; },
   t:'Y al revés: <b>sube la cima hasta la base</b>. ¿Qué me sale entonces?',
@@ -1315,7 +1457,9 @@ const ENCARGOS = [
   bien:'Un <b>prisma</b>, que ya no se estrecha. Y la receta lo dice sola: con los dos cuadrados '
       +'iguales, la suma son tres veces uno, y el tercio de la altura por tres veces la base es la '
       +'base por la altura. La misma cuenta del patio, del primer día.',
-  mal:'Suba la cima hasta que valga <b>lo mismo que la base</b>.'},
+  mal:() => 'La base está en ' + tronco.a + ' y la cima en ' + tronco.b + ': le faltan <b>'
+    + (tronco.a - tronco.b) + '</b> a la cima para que sean iguales'
+    + (tronco.b > tronco.a ? ' —o baje la base—' : '') + '.'},
 
  {sala:'seked', pre:() => { seked.s = 5.5; seked.h = 10; },
   t:'Esto ya no es piedra, es <b>forma</b>. ¿Qué mide el seked?',
@@ -1340,7 +1484,8 @@ const ENCARGOS = [
   bien:'Ahí está. Cinco palmos y medio de retranqueo por codo de subida — y con diez codos de alto, '
       +'una base de casi dieciséis. Cambie ahora la altura y mire: el perfil no se mueve. '
       +'El seked manda en la <b>forma</b>; la altura, en el <b>tamaño</b>.',
-  mal:'Cinco palmos y medio, mi señor: <b>5,5</b>.'},
+  mal:() => 'Está en ' + cifra(seked.s, 2) + ' palmos: ' + (seked.s < 5.5 ? 'más tumbada' : 'más de pie')
+    + ' que Keops. Cinco palmos y medio, mi señor: <b>5,5</b>.'},
 
  {sala:'seked', pre:() => { seked.s = 7; seked.h = 10; },
   t:'Última. Si pongo el seked a <b>siete palmos</b> por codo, ¿qué me sale?',
@@ -1358,6 +1503,188 @@ const ENCARGOS = [
       +'dentro por cada codo hacia arriba.'}]}
 ];
 
+/* ═══ EL TALLER · práctica libre ═════════════════════════════════════
+   Seis tipos de ejercicio generados al azar, uno por sala y otro de sí o
+   no, con corrección explicada, racha y «verlo en la sala»: el ejercicio
+   se pone en el manipulativo con sus números, que es donde se ve por qué.
+   Cada generador acepta su propia solución y rechaza basura, y el
+   autodiagnóstico lo comprueba cien veces.                              */
+const al = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+const elige = arr => arr[al(0, arr.length - 1)];
+/* la respuesta numérica admite coma o punto, y un pelo de tolerancia para
+   los que salen con decimales */
+const numero = v => { const n = parseFloat(String(v).trim().replace(',', '.')); return isNaN(n) ? null : n; };
+const casi = (v, sol, tol = .05) => { const n = numero(v); return n !== null && Math.abs(n - sol) <= tol; };
+
+const TIPOS = {
+  prisma: {n:'El patio', sala:'patio', gen(){
+    const l = elige([2, 3, 4, 5, 6, 2.5, 3.5]), a = al(2, 6), h = al(1, 5);
+    const sol = redondo(l * a * h, 2);
+    return {t:'Un pedestal de <b>' + cifra(l, 1) + '</b> codos de largo, <b>' + a + '</b> de ancho y <b>'
+              + h + '</b> de alto. ¿Cuántos codos cúbicos?',
+            sol, ok:v => casi(v, sol, .01),
+            exp:'La capa lleva ' + cifra(l, 1) + ' × ' + a + ' = ' + cifra(l * a, 2) + ' bloques, y hay '
+              + h + ' capa' + (h === 1 ? '' : 's') + ': ' + cifra(l * a, 2) + ' × ' + h + ' = <b>' + cifra(sol, 2) + '</b>.',
+            pon(){ patio.l = l; patio.a = a; patio.h = h; patio.puestas = h; }};
+  }},
+  granero: {n:'El granero', sala:'granero', gen(){
+    const d = elige([9, 18]), h = elige([4, 6, 8, 10, 12]);
+    const area = (8/9 * d) ** 2, sol = area * h;
+    return {t:'Un granero redondo de <b>' + d + '</b> codos de diámetro y <b>' + h + '</b> de alto. '
+              + 'Con la regla del escriba —el cuadrado de ocho novenos—, ¿cuántos codos cúbicos?',
+            sol, ok:v => casi(v, sol, .5),
+            exp:'Ocho novenos de ' + d + ' son ' + cifra(8/9 * d, 0) + '; el área de la planta, '
+              + cifra(8/9 * d, 0) + ' × ' + cifra(8/9 * d, 0) + ' = ' + cifra(area, 0) + '. Y ' + h
+              + ' capas: ' + cifra(area, 0) + ' × ' + h + ' = <b>' + cifra(sol, 0) + '</b>.',
+            pon(){ granero.d = d; granero.h = h; granero.regla = true; }};
+  }},
+  piramide: {n:'La caja', sala:'caja', gen(){
+    const l = al(2, 6), h = elige([3, 6]);
+    const sol = l * l * h / 3;
+    return {t:'Una pirámide de <b>' + l + '</b> codos de lado y <b>' + h + '</b> de alto. ¿Cuánta piedra?',
+            sol, ok:v => casi(v, sol, .01),
+            exp:'La caja primero: ' + l + ' × ' + l + ' × ' + h + ' = ' + (l*l*h) + '. Y la pirámide es su tercio: '
+              + (l*l*h) + ' ÷ 3 = <b>' + cifra(sol, 2) + '</b>.',
+            pon(){ caja.l = l; caja.h = Math.min(6, h); caja.dentro = 3; caja.separadas = false; }};
+  }},
+  tronco: {n:'El tronco', sala:'tronco', gen(){
+    const a = al(3, 6), b = al(0, a - 1), h = elige([3, 6, 9]);
+    const sol = vTronco(a, b, h);
+    return {t:'Una pirámide a medio levantar: base <b>' + a + '</b>, cima <b>' + b + '</b>, altura <b>' + h
+              + '</b>. ¿Cuánta piedra hay puesta?',
+            sol, ok:v => casi(v, sol, .01),
+            exp:'Un tercio de la altura, ' + h + ' ÷ 3 = ' + cifra(h/3, 2) + ', por la suma ' + a + '² + ' + a + '·' + b
+              + ' + ' + b + '² = ' + (a*a + a*b + b*b) + ': <b>' + cifra(sol, 2) + '</b>. Es la receta del papiro de Moscú.',
+            pon(){ tronco.a = a; tronco.b = b; tronco.h = h; tronco.punta = true; }};
+  }},
+  seked: {n:'El seked', sala:'seked', gen(){
+    const sk = elige([3, 4, 5, 5.5, 6, 7]), h = elige([6, 8, 10, 12]);
+    const sol = redondo(2 * sk / PALMOS * h, 2);
+    return {t:'Una pirámide con seked de <b>' + cifra(sk, 1) + '</b> palmos por codo y <b>' + h
+              + '</b> codos de alto. ¿Cuánto mide el lado de la base?',
+            sol, ok:v => casi(v, sol, .06),
+            exp:'Por cada codo que sube, la cara se mete ' + cifra(sk, 1) + ' palmos, que son ' + cifra(sk, 1)
+              + ' ÷ 7 = ' + cifra(sk / PALMOS, 3) + ' codos. En ' + h + ' codos de subida se mete '
+              + cifra(sk / PALMOS * h, 2) + ' por cada lado, y la base mide el doble: <b>' + cifra(sol, 2) + '</b>.',
+            pon(){ seked.s = sk; seked.h = h; }};
+  }},
+  sino: {n:'Sí o no', bool:true, gen(){
+    const e = elige([
+      ['Si doblo el largo de un bloque, se dobla la piedra.', 'sí',
+       'Solo ha cambiado una medida: cada capa se hace del doble de larga y las capas son las mismas.'],
+      ['Si doblo el largo y el ancho, se dobla la piedra.', 'no',
+       'Se multiplica por cuatro: cada medida que se dobla dobla la piedra una vez, y aquí son dos.'],
+      ['Si doblo las tres medidas, la piedra se multiplica por ocho.', 'sí',
+       'Dos por dos por dos. Cada medida doblada dobla la piedra una vez.'],
+      ['Una pirámide es la mitad de su caja.', 'no',
+       'Es un tercio: la caja se parte en tres pirámides iguales desde una esquina.'],
+      ['Dos pirámides con la misma base y la misma altura tienen el mismo volumen aunque la punta esté en sitios distintos.', 'sí',
+       'Son el mismo montón de láminas, corrido. Es el principio de Cavalieri, y está en las deudas.'],
+      ['Un tronco con la cima igual que la base es un prisma.', 'sí',
+       'Ya no se estrecha, y la receta del papiro se convierte sola en base por altura.'],
+      ['El seked dice cuánta piedra lleva la pirámide.', 'no',
+       'Dice qué forma tiene: palmos que se mete la cara por cada codo que sube. Es una razón, no un volumen.'],
+      ['Dos pirámides con el mismo seked son semejantes.', 'sí',
+       'Mismo seked, misma forma; solo cambia el tamaño.'],
+      ['Con seked 7, la cara se mete un codo por cada codo que sube.', 'sí',
+       'Siete palmos son un codo. La cara queda exactamente a media altura.'],
+      ['La regla de ocho novenos da el área exacta del círculo.', 'no',
+       'Es una aproximación: se queda a menos de un uno por ciento, que para una cuerda y un papiro es mucho.']
+    ]);
+    return {t:e[0] + ' ¿Sí o no?', sol:e[1], ok:v => String(v).trim().toLowerCase() === e[1], exp:e[2]};
+  }}
+};
+
+const taller = {tipo:'prisma', ej:null, ac:0, racha:0, mejor:0, enTaller:false, corregido:false};
+
+function pintaTipos(){
+  const c = $('tipos'); c.innerHTML = '';
+  Object.keys(TIPOS).forEach(k => {
+    const b = document.createElement('button');
+    b.className = 'b'; b.textContent = TIPOS[k].n;
+    b.setAttribute('aria-pressed', String(taller.tipo === k));
+    b.addEventListener('click', () => { taller.tipo = k; pintaTipos(); nuevoEjercicio(); });
+    c.appendChild(b);
+  });
+  $('tAc').textContent = taller.ac; $('tRacha').textContent = taller.racha; $('tMejor').textContent = taller.mejor;
+}
+function nuevoEjercicio(){
+  const T = TIPOS[taller.tipo];
+  taller.ej = T.gen(); taller.corregido = false;
+  $('ejer').innerHTML = taller.ej.t;
+  $('verTaller').hidden = true; $('verlo').hidden = true;
+  $('filaSiNo').hidden = !T.bool;
+  $('filaResp').hidden = !!T.bool;
+  if(!T.bool){ const r = $('resp'); r.value = ''; r.focus(); }
+}
+function corrige(dado){
+  const v = dado !== undefined ? dado : $('resp').value;
+  if(!String(v).trim() || taller.corregido) return;
+  const bien = taller.ej.ok(v);
+  const ver = $('verTaller'); ver.hidden = false;
+  ver.className = 'veredicto' + (bien ? ' bien' : '');
+  if(bien){ taller.ac++; taller.racha++; taller.mejor = Math.max(taller.mejor, taller.racha);
+    ver.innerHTML = '<b>Bien.</b> ' + taller.ej.exp; }
+  else { taller.racha = 0;
+    ver.innerHTML = 'No. La respuesta era <b>' + (typeof taller.ej.sol === 'number' ? cifra(taller.ej.sol, 2) : taller.ej.sol)
+      + '</b>. ' + taller.ej.exp; }
+  taller.corregido = true;
+  $('verlo').hidden = !taller.ej.pon;
+  pintaTipos();
+  guardaTurno();
+}
+/* VERLO EN LA SALA: el ejercicio se pone en el manipulativo con sus números,
+   debajo del taller, y el taller sigue arriba para volver a por otro. */
+function verEnSala(){
+  const e = taller.ej, T = TIPOS[taller.tipo]; if(!e || !e.pon) return;
+  e.pon(); muestraSala(T.sala);
+  $(SALAS[T.sala]).scrollIntoView({behavior:'smooth', block:'start'});
+}
+function entraTaller(dentro){
+  taller.enTaller = dentro;
+  $('bTaller').setAttribute('aria-pressed', String(dentro));
+  $('pTaller').hidden = !dentro;
+  document.querySelector('.panel.encargo').hidden = dentro;
+  $('informe').hidden = dentro || !hechos.has(enc);
+  $('pIndice').hidden = true; $('bIndice').setAttribute('aria-pressed', 'false');
+  $('pDeudas').hidden = true; $('bDeudas').setAttribute('aria-pressed', 'false');
+  if(dentro){ pintaTipos(); nuevoEjercicio(); for(const k in SALAS) $(SALAS[k]).hidden = true; }
+  else pintaEncargo();
+}
+$('bTaller').addEventListener('click', () => entraTaller(!taller.enTaller));
+$('corrige').addEventListener('click', () => corrige());
+$('bSi').addEventListener('click', () => corrige('sí'));
+$('bNo').addEventListener('click', () => corrige('no'));
+$('resp').addEventListener('keydown', e => { if(e.key === 'Enter'){ taller.corregido ? nuevoEjercicio() : corrige(); } });
+$('otro').addEventListener('click', nuevoEjercicio);
+$('verlo').addEventListener('click', verEnSala);
+
+/* la hoja de diez: diez ejercicios variados, clave en hoja aparte */
+$('hojaDiez').addEventListener('click', () => {
+  const claves = Object.keys(TIPOS); const lista = [];
+  for(let i = 0; i < 10; i++) lista.push(TIPOS[claves[i % claves.length]].gen());
+  const limpia = h => h.replace(/<[^>]+>/g, '');
+  const solTxt = e => typeof e.sol === 'number' ? cifra(e.sol, 2) : e.sol;
+  $('hoja').innerHTML = '<h2>La obra de Jefeops · hoja de práctica</h2>'
+    + '<div class="cab">Cuerpos y volúmenes, en codos · Nombre: ____________________ · Fecha: __________</div>'
+    + '<ol>' + lista.map(e => '<li>' + limpia(e.t) + '</li>').join('') + '</ol>'
+    + '<div class="clave"><h2>Clave del profesor</h2><ol>'
+    + lista.map(e => '<li><b>' + solTxt(e) + '</b> — ' + limpia(e.exp) + '</li>').join('') + '</ol></div>';
+  document.body.classList.add('imprimiendo');
+  const fuera = () => { document.body.classList.remove('imprimiendo'); removeEventListener('afterprint', fuera); };
+  addEventListener('afterprint', fuera);
+  setTimeout(() => { print(); setTimeout(fuera, 800); }, 60);
+});
+
+/* ── LAS DEUDAS: se abren desde la barra, como el índice ── */
+$('bDeudas').addEventListener('click', () => {
+  const abre = $('pDeudas').hidden;
+  $('pDeudas').hidden = !abre;
+  $('bDeudas').setAttribute('aria-pressed', String(abre));
+  if(abre){ $('pIndice').hidden = true; $('bIndice').setAttribute('aria-pressed', 'false');
+            $('pDeudas').scrollIntoView({behavior:'smooth', block:'start'}); }
+});
+
 /* ── EL MOTOR DEL ENCARGO ─────────────────────────────────────────────── */
 let papiroVisto = false;
 let enc = 0, elegida = null;
@@ -1373,7 +1700,8 @@ const CADUCA = 4*60*60*1000;
 function guardaTurno(){
   try{
     localStorage.setItem(GUARDADO, JSON.stringify({
-      v:1, ts:Date.now(), enc:enc, hechos:[...hechos], modo:document.body.dataset.modo
+      v:1, ts:Date.now(), enc:enc, hechos:[...hechos], modo:document.body.dataset.modo,
+      taller:{ac:taller.ac, racha:taller.racha, mejor:taller.mejor}
     }));
   }catch(e){ /* sin almacén disponible: se sigue igual, sin guardar */ }
 }
@@ -1414,7 +1742,9 @@ function pintaEncargo(){
       + 'mirar cuánto cabe dentro. Una capa repetida hacia arriba, la caja partida en tres, '
       + 'la entera menos la punta. Y el seked, que no cuenta piedra sino que decide la forma — '
       + 'y ése volverá a aparecer, mi señor, el día que alguien quiera medir esta pirámide '
-      + 'desde su sombra.'
+      + 'desde su sombra. Y otra cosa que volverá: lo que cabe en un cuerpo también se mide en '
+      + '<b>lo que se puede echar dentro</b>. Un alfarero griego, río abajo, llenará vasijas para '
+      + 'contarlo, y un día un decímetro cúbico se llamará litro.'
     : e.t;
   $('cual').textContent = (ultimo && hecho) ? 'obra cerrada'
     : 'encargo ' + (enc + 1) + ' de ' + ENCARGOS.length;
@@ -1450,7 +1780,7 @@ $('comprobar').addEventListener('click', () => {
     if(elegida === null){ bien = false; dice = 'Elija una, mi señor.'; }
     else { bien = e.ops[elegida].ok; dice = e.ops[elegida].r;
            if(!bien) document.querySelectorAll('.op')[elegida].classList.add('fallada'); }
-  }else{ bien = e.ok(); dice = bien ? e.bien : e.mal; }
+  }else{ bien = e.ok(); dice = bien ? e.bien : (typeof e.mal === 'function' ? e.mal() : e.mal); }
   inf.hidden = false;
   inf.className = 'panel informe encargo' + (bien ? '' : ' mal');
   $('infTxt').innerHTML = dice;
@@ -1491,6 +1821,7 @@ function pintaIndice(){
 $('bIndice').addEventListener('click', () => {
   const abre = $('pIndice').hidden;
   $('pIndice').hidden = !abre;
+  if(abre){ $('pDeudas').hidden = true; $('bDeudas').setAttribute('aria-pressed', 'false'); }
   $('bIndice').setAttribute('aria-pressed', String(abre));
   if(abre) pintaIndice();
 });
@@ -1516,7 +1847,8 @@ $('ixTodo').addEventListener('click', () => {
       clearTimeout(reloj); reloj = setTimeout(desarma, 5000);
       return;
     }
-    desarma(); borraTurno(); hechos.clear(); enc = 0; pintaEncargo();
+    desarma(); borraTurno(); hechos.clear(); enc = 0;
+    taller.ac = 0; taller.racha = 0; taller.mejor = 0; pintaEncargo();
   });
 }
 $('bModo').addEventListener('click', () => {
@@ -1586,7 +1918,33 @@ $('ixDiag').addEventListener('click', () => {
   }
   di('sobra − falta = lo que la regla de 8/9 se pasa', bienSF);
 
-  // 9 · el seked de siete palmos deja la cara a media altura
+  // 9 · los generadores del taller aceptan su solución y rechazan basura
+  let bienGen = true, nGen = 0;
+  for(const k in TIPOS) for(let i = 0; i < 100; i++){
+    const e = TIPOS[k].gen(); nGen++;
+    const sol = typeof e.sol === 'number' ? String(e.sol).replace('.', ',') : e.sol;
+    if(!e.ok(sol) || e.ok('999999') || e.ok('') || !e.t || !e.exp) bienGen = false;
+  }
+  di('los ' + Object.keys(TIPOS).length + ' generadores del taller aceptan su solución y rechazan basura ('
+     + nGen + ' pruebas)', bienGen);
+  // 10 · lo que el taller pone en la sala cae en los mandos de la sala
+  const EN = (v, lista) => lista.includes(v);
+  let bienPon = true;
+  for(let i = 0; i < 60; i++){
+    let e = TIPOS.seked.gen(); e.pon();
+    if(!EN(seked.s, [3,4,5,5.5,6,7]) || !EN(seked.h, [6,8,10,12])) bienPon = false;
+    e = TIPOS.granero.gen(); e.pon();
+    if(!EN(granero.d, [6,8,9,10,12,18]) || !EN(granero.h, [4,6,8,10,12])) bienPon = false;
+    e = TIPOS.tronco.gen(); e.pon();
+    if(!EN(tronco.a, [2,3,4,5,6]) || !EN(tronco.b, [0,1,2,3,4,5,6]) || !EN(tronco.h, [2,3,4,6,8,9,10])) bienPon = false;
+    e = TIPOS.prisma.gen(); e.pon();
+    if(!EN(patio.l, [1,2,2.5,3,3.5,4,5,6]) || !EN(patio.a, [1,2,2.5,3,3.5,4,5,6]) || !EN(patio.h, [1,2,3,4,5,6])) bienPon = false;
+    e = TIPOS.piramide.gen(); e.pon();
+    if(!EN(caja.l, [2,3,4,5,6]) || !EN(caja.h, [2,3,4,5,6])) bienPon = false;
+  }
+  di('«verlo en la sala» deja los mandos en valores que existen (300 pruebas)', bienPon);
+
+  // 11 · el seked de siete palmos deja la cara a media altura
   di('seked 7 = un codo por codo (cara a media altura)',
      Math.abs(7 / PALMOS - 1) < 1e-9);
 
@@ -1605,7 +1963,7 @@ $('ixDiag').addEventListener('click', () => {
 
   // 12 · los encargos de comprobación traen su pre y sus dos textos
   di('cada encargo de manipulativo trae pre, bien y mal',
-     ENCARGOS.filter(e => !e.ops).every(e => e.pre && e.bien && e.mal));
+     ENCARGOS.filter(e => !e.ops).every(e => e.pre && e.bien && (typeof e.mal === 'function' || e.mal)));
 
   // 13 · las cinco salas tienen rótulo y quien las pinte
   di('las ' + Object.keys(SALAS).length + ' salas tienen rótulo y pintor',
@@ -1636,6 +1994,8 @@ $('ixDiag').addEventListener('click', () => {
   if(d){
     enc = d.enc;
     d.hechos.forEach(i => { if(i >= 0 && i < ENCARGOS.length) hechos.add(i); });
+    const t = d.taller || {};
+    taller.ac = t.ac|0; taller.racha = t.racha|0; taller.mejor = t.mejor|0;
   }
   pintaEncargo();
 }
