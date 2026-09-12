@@ -278,6 +278,30 @@ body.imprimiendo > *:not(.hoja){display:none !important}
 @media (prefers-reduced-motion: reduce){
   *{animation-duration:.001ms !important;transition-duration:.001ms !important}
 }
+
+/* ── EL MODO AULA ───────────────────────────────────────────────────────
+   Para la pizarra digital. Dos cosas, y ninguna más: todo un tercio más
+   grande, que es lo que se nota desde el fondo de la clase; y, si hay
+   sitio, el encargo a la izquierda y la sala a la derecha, para que se
+   vean a la vez y no haya que rodar con el dedo mientras se explica.
+   El zoom escala TODO a la vez —letra, botones, dibujos—, así que no hay
+   que tocar ni un tamaño suelto y nada se descoloca.                     */
+@media (min-width:900px){
+  body[data-aula="si"]{zoom:1.32;max-width:1430px}
+}
+@media (min-width:1100px){
+  body[data-aula="si"] .aulaRejilla{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.06fr);
+    gap:0 14px;align-items:start}
+  /* las columnas dejan de ser transparentes SOLO aquí: fuera del modo aula
+     son `display:contents` y la página se lee en fila, como siempre */
+  body[data-aula="si"] .colIzq,
+  body[data-aula="si"] .colDer{display:block;min-width:0}
+  body[data-aula="si"] .colIzq > .panel:first-child,
+  body[data-aula="si"] .colDer > .panel:first-child{margin-top:0}
+  body[data-aula="si"] .colIzq > footer.pie{margin-top:18px}
+}
+.aulaRejilla,.colIzq,.colDer{display:contents}
+.barra button.aula[aria-pressed="true"]{color:var(--oro)}
 </style>
 </head><body>
 <header>
@@ -293,6 +317,7 @@ body.imprimiendo > *:not(.hoja){display:none !important}
     <button id="bIndice" aria-pressed="false">Salas</button>
     <button id="bDeudas" aria-pressed="false">Deudas</button>
     <span style="flex:1"></span>
+    <button id="bAula" class="aula" aria-pressed="false">Aula</button>
     <button id="bModo">Modo papel</button>
   </nav>
 </header>
@@ -1700,7 +1725,8 @@ const CADUCA = 4*60*60*1000;
 function guardaTurno(){
   try{
     localStorage.setItem(GUARDADO, JSON.stringify({
-      v:1, ts:Date.now(), enc:enc, hechos:[...hechos], modo:document.body.dataset.modo,
+      v:1, ts:Date.now(), enc:enc, hechos:[...hechos], modo: document.body.dataset.modo,
+      aula: document.body.dataset.aula,
       taller:{ac:taller.ac, racha:taller.racha, mejor:taller.mejor}
     }));
   }catch(e){ /* sin almacén disponible: se sigue igual, sin guardar */ }
@@ -1990,6 +2016,8 @@ $('ixDiag').addEventListener('click', () => {
 {
   const d = leeTurno();
   document.body.dataset.modo = (d && d.modo === 'papel') ? 'papel' : 'pantalla';
+  document.body.dataset.aula = (d && d.aula === 'si') ? 'si' : 'no';
+  if(window.pintaAula) pintaAula();
   if(document.body.dataset.modo === 'papel') $('bModo').textContent = 'Modo pantalla';
   if(d){
     enc = d.enc;
@@ -1998,6 +2026,41 @@ $('ixDiag').addEventListener('click', () => {
     taller.ac = t.ac|0; taller.racha = t.racha|0; taller.mejor = t.mejor|0;
   }
   pintaEncargo();
+}
+
+/* ── EL MODO AULA ───────────────────────────────────────────────────────
+   La rejilla se monta aquí y no en el HTML: se envuelven los paneles que
+   ya existen, sin tocar el orden del documento. Fuera del modo aula los
+   envoltorios son `display:contents`, o sea que no pintan nada y la página
+   se lee como siempre, también para un lector de pantalla.               */
+{
+  const rej = document.createElement('div'); rej.className = 'aulaRejilla';
+  const izq = document.createElement('div'); izq.className = 'colIzq';
+  const der = document.createElement('div'); der.className = 'colDer';
+  const enc = $('pEncargo') || document.querySelector('.panel.encargo');
+  enc.parentNode.insertBefore(rej, enc);
+  rej.appendChild(izq); rej.appendChild(der);
+  izq.appendChild(enc);
+  const inf = $('informe'); if(inf) izq.appendChild(inf);
+  const rot = $('rotuloLibre'); if(rot) der.appendChild(rot);
+  Object.values(SALAS).forEach(id => { const p = $(id); if(p) der.appendChild(p); });
+  /* el pie se muda a la columna de la izquierda, que se queda libre bajo el
+     encargo: así el alto de la página es el de la columna más alta y no la
+     suma de las dos */
+  const pie = document.querySelector('footer.pie'), marca = document.createComment('pie');
+  if(pie) pie.before(marca);
+  const muda = si => { if(!pie) return; if(si) izq.appendChild(pie); else marca.after(pie); };
+
+  const pinta = () => {
+    const si = document.body.dataset.aula === 'si';
+    muda(si && innerWidth >= 1100);
+    const b = $('bAula');
+    if(b){ b.setAttribute('aria-pressed', String(si)); b.textContent = si ? 'Salir del aula' : 'Aula'; }
+  };
+  window.pintaAula = pinta;
+  addEventListener('resize', pinta);
+  $('bAula').addEventListener('click', () => { document.body.dataset.aula = document.body.dataset.aula === 'si' ? 'no' : 'si'; pinta(); guardaTurno(); });
+  pinta();
 }
 </script>
 </body></html>
